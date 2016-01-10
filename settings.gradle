@@ -1,0 +1,4 @@
+include ':app'
+include ':android-ui'
+include ':MaterialTabsModule'
+include ':openCVLibrary2410'
