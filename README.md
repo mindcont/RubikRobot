@@ -10,7 +10,7 @@
 android-ui | 实现控件的动态效果 | markushi |https://github.com/markushi/android-ui
 MaterialTabsModule | 实现自定义选项卡 | neokree |https://github.com/neokree/MaterialTabs
 openCVLibrary2410 | OpenCV用于安卓的开源计算机视觉库 | OpenCV |http://opencv.org
-app | 主项目文件 | 页面布局、识别、算法 | 修改自DigDream |https://github.com/mindcont/RobikRobot
+app | 页面布局、识别、算法 | 修改自DigDream |https://github.com/mindcont/RobikRobot
 
 ## 项目流程
 硬件(cubieboard2双卡版)--》适配安卓4.2系统--》运行APP (主要实现色块的识别,解魔方算法)
