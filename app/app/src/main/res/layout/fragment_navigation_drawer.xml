@@ -1,0 +1,10 @@
+<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="290dp"
+        android:layout_height="80dp"
+        android:background="@color/transparent"
+        android:divider="@color/holo_selector_pressed"
+        android:dividerHeight="0dp"
+        tools:context=".NavigationDrawerFragment" />
+
+
