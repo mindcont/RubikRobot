@@ -1,107 +1,48 @@
 <resources>
-    <string name="app_name">解魔方</string>
+    <string name="app_name">魔方机器人</string>
 
-    <string name="title_section1">复原魔方</string>
-    <string name="title_section2">打乱魔方</string>
-    <string name="title_section3">关于</string>
+    <!-- Main menu-->
+    <string name="settings">设置</string>
+    <string name="scan">蓝牙设备</string>
+    <string name="cube_preview">魔方预览</string>
+    <string name="aboutus">关于我们</string>
 
-    <string name="mainTab_section1">速解魔方</string>
-    <string name="mainTab_section2">复原历史</string>
-    <string name="mainTab_section3">计时复原</string>
+    <!--  BluetoothChatActivity -->
+    <string name="send">发送</string>
+    <string name="stop">停止</string>
+    <string name="success">成功</string>
 
-    <string name="solver_btn_1">连接</string>
-    <string name="solver_btn_2">扫描</string>
+    <string name="not_connected">当前未连接到任何设备</string>
+    <string name="bt_not_enabled_leaving">蓝牙服务不可用 </string>
+    <string name="title_connecting">正在连接中...</string>
+    <string name="title_connected_to">连接到: </string>
+    <string name="title_not_connected">未连接</string>
 
 
-    <string name="about">本软件配合单片机控制器驱动舵机进行任意正确状态下三阶魔方的自动复原工作。软件开发期间，我们对DigDream先生github上开源作品进行仔细的研读和使用。
+    <!--  DeviceListActivity -->
+    <string name="scanning">扫描设备...</string>
+    <string name="select_device">选择要连接的设备</string>
+    <string name="none_paired">没有配对设备</string>
+    <string name="none_found">未发现可连接的设备</string>
+    <string name="title_paired_devices">已配对设备</string>
+    <string name="title_other_devices">其它可连接设备</string>
+    <string name="button_scan">扫描设备</string>
+    <string name="button_jump">跳转</string>
+
+    <!--AboutActivity-->
+     <string name="about">本软件配合单片机控制器驱动舵机进行任意正确状态下三阶魔方的自动复原工作。软件开发期间，我们对DigDream先生github上开源作品进行仔细的研读和使用。
         \n\n在此，我们特别感谢DigDream和其他一些致力于开放源代码的朋友们。</string>
     <string name="mindcont">©2016 追梦者 </string>
-    <string name="creative_commons">在知识共享 署名-相同方式共享 3.0协议之条款下提供</string>
+    <string name="creative_commons">在知识共享 署名-相同方式共享 4.0协议之条款下提供</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_example">Example action</string>
+    <!-- Options Menu -->
+    <string name="connect">连接设备</string>
+    <string name="discoverable">断开连接</string>
 
-    <string name="action_settings">Settings</string>
-
-    <string name="just_now">Just now</string>
-
-    <string name="menu_settings">Settings</string>
-    <string name="menu_scramble">Toggle Scramble</string>
-    <string name="menu_solve">Toggle Solve</string>
-    <string name="menu_reset_cube">Reset Cube</string>
-    <string name="menu_reset_camera">Reset Camera</string>
-
-    <string name="input_return">Return</string>
-    <string name="input_colour_cube">"Color the cube's tiles"</string>
-    <string name="input_solve">Solve!</string>
-
-    <string name="tv_state">未连接</string>
-    <string name="tv_bluetooth_state_discover">正在扫描</string>
-    <string name="tv_bluetooth_state_enable">已启用蓝牙</string>
-    <string name="tv_custom_up_color">蓝色</string>
-    <string name="tv_custom_left_color">白色</string>
-    <string name="tv_custom_right_color">黄色</string>
-    <string name="tv_custom_bottom_color">绿色</string>
-    <string name="tv_custom_front_color">红色</string>
-    <string name="tv_custom_back_color">橙色</string>
-
-    <string name="tv_custom_left_sidebar_color">白色</string>
-    <string name="tv_custom_right_sidebar_color">橙色</string>
-    <string name="tv_custom_up_sidebar_color">白色</string>
-    <string name="tv_custom_bottom_sidebar_color">橙色</string>
-    <string name="tv_custom_front_sidebar_color">白色</string>
-    <string name="tv_custom_back_sidebar_color">橙色</string>
-
-    <string name="start">开始</string>
-    <string name="split">分裂</string>
-    <string name="pause">暂停</string>
-    <string name="stop">停止</string>
-
-    <string name="cross">cross</string>
-    <string name="f2l">f2l</string>
-    <string name="oll">oll</string>
-    <string name="pll">pll</string>
-
-    <string name="lap">lap</string>
-
-    <string name="title_settings_activity">Settings</string>
-    <string name="create_random_cube">Create randomized cube</string>
-    <string name="clear_cube">Clear cube</string>
-    <string name="about_arcs">About A.R.C.S</string>
-    <string name="solution">Solution</string>
-    <string name="instructionTitle">Set colors on %1$s face</string>
-    <string name="manualInstructionContent">旋转魔方，直到朝向你的那一面中间色块颜色为 %1$s 并且朝上一面中间色块的颜色为 %2$s\n当识别有误时，
-        请手动输入正确的色块颜色\n在当前面所有色块正确读取完成后，请按向下按钮，继续读取下一面色块的颜色</string>
-    <string name="instructionContent">识别</string>
-    <string name="backBtnDesc">向后</string>
-    <string name="cameraBtnDesc">识别色块</string>
-    <string name="forwardBtnDesc">向前</string>
-
-    <string name="rotate">Rotate</string>
-
-    <string name="dialog_title_cube_input_method_prefs">Cube Input Method</string>
-
-    <string-array name="entries_cube_input_method_prefs">
-        <item>Manual</item>
-    </string-array>
-    <string-array name="entryvalues_cube_input_method_prefs">
-        <item>manual</item>
-    </string-array>
-
-    <string name="summary_cube_input_method_prefs">How to input initial cube configuration: %s</string>
-    <string name="title_cube_input_method_prefs">魔方状态输入</string>
-    <string name="chooseColorDialogTitle">请选择颜色</string>
-
-    <string-array name="colors">
-        <item>橘色</item>
-        <item>蓝色</item>
-        <item>红色</item>
-        <item>绿色</item>
-        <item>白色</item>
-        <item>黄色</item>
-    </string-array>
+    <!-- Toast Messages -->
+    <string name="camera_not_found">未找到摄像头硬件</string>
+    <string name="take_photo_help">点击屏幕任意位置进行拍照</string>
 
     <string-array name="errors">
         <item>There are not exactly nine facelets of each color!</item>
@@ -113,32 +54,7 @@
         <item>No solution exists for the given maximum move number!</item>
         <item>Timeout, no solution found within given maximum time!</item>
     </string-array>
+
     <string name="cube_is_solved">This cube is already solved!</string>
 
-    <string name="solutionStepTitle">Step %1$s of %2$s</string>
-
-    <string-array name="rotationTexts">
-        <item>90° clockwise</item>
-        <item>180°</item>
-        <item>90° counter-clockwise</item>
-    </string-array>
-
-    <string-array name="rotationSide">
-        <item>front side</item>
-        <item>right side</item>
-        <item>back side</item>
-        <item>left side</item>
-        <item>down side</item>
-        <item>upper side</item>
-    </string-array>
-
-    <!-- Toast Messages -->
-    <string name="camera_not_found">未找到摄像头硬件</string>
-    <string name="take_photo_help">点击屏幕任意位置进行拍照</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_setting">关于解魔方</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_upset_tab">UpsetTabActivity</string>
 </resources>

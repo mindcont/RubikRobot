@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="window_background">#e6e6e6</color>
-    <color name="transparent">#00000000</color>
-    <color name="holo_selector_pressed">#8033b5e5</color>
-    <color name="user_icon_1">#ff00bcd4</color>
 
-    <color name="rubik_color_red">#ffdf0101</color>
-    <color name="rubik_color_blue">#ff3a01df</color>
-    <color name="rubik_color_green">#ff088a08</color>
-    <color name="rubik_color_white">#ffffffff</color>
-    <color name="rubik_color_yellow">#ffffff00</color>
-    <color name="rubik_color_orange">#ffff8000</color>
-
-    <color name="dkblue">#0099CC</color>
-    <color name="ltblue">#33B5E5</color>
-    <color name="dkred">#CC0000</color>
-    <color name="ltred">#FF4444</color>
-    <color name="dkgreen">#669900</color>
-    <color name="ltgreen">#99CC00</color>
-    <color name="ltgray">#555555</color>
+    <color name="red">#FF0000</color>
+    <color name="blue">#33B5E5</color>
+    <color name="green">#99CC00</color>
+    <color name="white">#FFFFFF</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="orange">#FFA500</color>
+    <color name="gray">#ffcccccc</color>
 
 </resources>
