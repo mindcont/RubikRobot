@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/C:/Users/fenxi/Desktop/RubikRobot/app/src/main/res/values/strings.xml -->
+    <!-- From: file:/D:/AndroidStudioProjects/RubikRobot/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string-array name="errors">
         <item>There are not exactly nine facelets of each color!</item>
@@ -12,7 +12,7 @@
         <item>No solution exists for the given maximum move number!</item>
         <item>Timeout, no solution found within given maximum time!</item>
     </string-array>
-    <!-- From: file:/C:/Users/fenxi/Desktop/RubikRobot/app/src/main/res/values/color.xml -->
+    <!-- From: file:/D:/AndroidStudioProjects/RubikRobot/app/src/main/res/values/color.xml -->
     <eat-comment/>
     <color name="blue">#33B5E5</color>
     <color name="gray">#ffcccccc</color>
@@ -21,7 +21,7 @@
     <color name="red">#FF0000</color>
     <color name="white">#FFFFFF</color>
     <color name="yellow">#FFFF00</color>
-    <!-- From: file:/C:/Users/fenxi/Desktop/RubikRobot/app/src/main/res/values/strings.xml -->
+    <!-- From: file:/D:/AndroidStudioProjects/RubikRobot/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="about">本软件配合单片机控制器驱动舵机进行任意正确状态下三阶魔方的自动复原工作。软件开发期间，我们对DigDream先生github上开源作品进行仔细的研读和使用。
         \n\n在此，我们特别感谢DigDream和其他一些致力于开放源代码的朋友们。</string>

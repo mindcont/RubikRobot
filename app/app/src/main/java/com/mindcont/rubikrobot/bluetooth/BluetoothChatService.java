@@ -44,13 +44,14 @@ public class BluetoothChatService {
     public static final int STATE_NONE = 0;       // we're doing nothing
     public static final int STATE_LISTEN = 1;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
+
+    // Unique UUID for this application
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
     // Debugging
     private static final String TAG = "BluOnetoothChatService";
     private static final boolean D = true;
     // Name for the SDP record when creating server socket
     private static final String NAME = "MainActivity";
-    // Unique UUID for this application
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     // Member fields
     private final BluetoothAdapter mAdapter;

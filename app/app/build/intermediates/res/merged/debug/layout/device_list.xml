@@ -42,4 +42,4 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/button_scan" />
-</LinearLayout><!-- From: file:/C:/Users/fenxi/Desktop/RubikRobot/app/src/main/res/layout/device_list.xml -->
+</LinearLayout><!-- From: file:/D:/AndroidStudioProjects/RubikRobot/app/src/main/res/layout/device_list.xml -->

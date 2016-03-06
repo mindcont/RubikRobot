@@ -11,4 +11,4 @@
         android:showAsAction="always"
         android:title="@string/discoverable" />
 </menu>
-<!-- From: file:/C:/Users/fenxi/Desktop/RubikRobot/app/src/main/res/menu/bluetooth_menu.xml -->
+<!-- From: file:/D:/AndroidStudioProjects/RubikRobot/app/src/main/res/menu/bluetooth_menu.xml -->

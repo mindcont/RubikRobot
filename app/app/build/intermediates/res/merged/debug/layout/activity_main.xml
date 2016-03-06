@@ -9,9 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.mindcont.rubikrobot.ui.SVDraw
-        android:id="@+id/mDraw"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <!--<com.mindcont.rubikrobot.ui.SVDraw-->
+        <!--android:id="@+id/mDraw"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
 
-</FrameLayout><!-- From: file:/C:/Users/fenxi/Desktop/RubikRobot/app/src/main/res/layout/activity_main.xml -->
+</FrameLayout><!-- From: file:/D:/AndroidStudioProjects/RubikRobot/app/src/main/res/layout/activity_main.xml -->

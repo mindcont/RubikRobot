@@ -1,31 +1,29 @@
 package com.mindcont.rubikrobot.ui;
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
-import android.util.Log;
-
 
 import com.mindcont.rubikrobot.R;
-import com.mindcont.rubikrobot.solver.Search;
+import com.mindcont.rubikrobot.camera.ColorRecognition;
 
 /**
  * Created by fenxi on 2016/2/21.
  */
 public class CubePreview extends Activity {
 
+    private static final String TAG = "ARCS::CubePreview";
     //测试用，魔方定义字符串。理应由识别后结果得到
     // 扫描顺序 上(白) 右（绿） 前（黄）下（橘红） 左（红） 后（蓝）
-    public String cubeDefinitionString = "BLLLURDUURFUBRDRRFRFFFFURLFUFDLDDLUULDBRLDDBBBUDBBBLRF";
-
-    private static final String TAG = "ARCS::CubePreview";
+    public String cubeDefinitionStringTest = "URRRUBULFLDFURLBLDRBUFFBURRLBDLDFDFLBUFDLRFUBDDRDBFBUL";
+    //ColorRecognition
+    ColorRecognition colorRecognition = new ColorRecognition();
     private int color;
 
     /**
      * Computes the solver string for a given cube.
-     * <p>
+     * <p/>
      * facelets
      * is the cube definition string format.<br>
      * The names of the facelet positions of the cube:
@@ -64,11 +62,11 @@ public class CubePreview extends Activity {
 //        Button buttonRandom = new Button(this);
 //
         //构造 .solver.search() 中的方法，传入魔方定义字符串
-        Search search = new Search();
-        String solution = search.solution(cubeDefinitionString, 21, 10000, 0, 0x0);
-        //对结果的处理
-        processResult(solution);
-//
+//        Search search = new Search();
+//        String solution = search.solution(colorRecognition.getRubikTotalColor(), 21, 10000, 0, 0x0);
+//        //对结果的处理
+//        processResult(solution);
+
 //        buttonRandom.setText(solution);
 //        buttonRandom.setBackgroundColor(getResources().getColor(R.color.red));
 //        linearLayout.addView(buttonRandom);
@@ -233,7 +231,8 @@ public class CubePreview extends Activity {
 
     public int getFaceletColor(int faceletID) {
 
-        switch (cubeDefinitionString.charAt(faceletID)) {
+        //此处 传入识别后得到的魔方颜色定义数组
+        switch (colorRecognition.getRubikTotalColor().charAt(faceletID)) {
             case 'U':
                 color = getResources().getColor(R.color.white);
                 break;
@@ -255,8 +254,10 @@ public class CubePreview extends Activity {
         }
         return color;
     }
+
     /**
      * 对 solver.search()方法的返回结果的处理
+     *
      * @param solution
      */
     private void processResult(String solution) {
@@ -277,73 +278,5 @@ public class CubePreview extends Activity {
         //显示复原魔方的步骤
         Toast.makeText(this, solution, Toast.LENGTH_LONG).show();
     }
-
-    /**
-     * 异步对结果的处理
-     * 1.  onPreExecute(), 异步任务开始执行时，由UI线程调用，比如在UI上展示进度条。
-     * 2.  doInBackground(Params...), onPreExecute()执行完后，立即由后台线程调用. 该方法用来执行后台的操作，可能需要花费不少时间。
-     *    参数Params传入该方法，处理结果返回并作为最后一步onPostExecute(Result)的参数值传入。
-     *    该方法内，还可以使用方法publishProgress(Progress...)来发布异步操作的进展状态，发布的进展状态数据作为onProgressUpdate(Progress...)的参数传入，
-     *     被UI线程调用。
-     * 3. onProgressUpdate(Progress...), 和2提到的一样，该方法在publishProgress(Progress...)执行后，由UI线程调用。
-     *    该方法用来在UI上展示后台操作正在执行的任何状态，不能确定它会执行多久。
-     *     比如，它可以使用动画来呈现执行过程的状态栏或者在Text里展示执行日志等。
-     * 4. onPostExecute(Result), 后台线程操作完毕后，由UI线程调用，doInBackground(Params...)的返回值作为其参数传入。
-     */
-//    private class CubeSolver extends AsyncTask<String, Integer, String> {
-//        long startTime;
-//
-//        @Override
-//        protected void onPreExecute() {
-//            //获取系统当前时间
-//            startTime = System.currentTimeMillis();
-//        }
-
-//        @Override
-//        protected String doInBackground(String... singmasterNotation) {
-//            //构造 .solver.search() 中的方法，传入魔方定义字符串
-//            Search search = new Search();
-//            String solution = search.solution(singmasterNotation[0], 21, 10000, 0, 0x0);
-//            return solution;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String result) {
-//
-//        long runTime = System.currentTimeMillis() - startTime;
-//        Log.d(TAG, "Found solution in " + runTime + "ms :" + result);
-//
-//        }
-//    }
-
-    /**
-     * 根据识别结果构造 魔方定义字符串
-     */
-
-//    public String getSingmasterNotation() {
-//        StringBuilder singmaster = new StringBuilder();
-//
-//        // URFDLB
-//        for (Facelet facelet : getFace(Rotator.UP)) {
-//            singmaster.append(ColorConverter.colorToSingmaster(facelet.getColor()));
-//        }
-//        for (Facelet facelet : getFace(Rotator.RIGHT)) {
-//            singmaster.append(ColorConverter.colorToSingmaster(facelet.getColor()));
-//        }
-//        for (Facelet facelet : getFace(Rotator.FRONT)) {
-//            singmaster.append(ColorConverter.colorToSingmaster(facelet.getColor()));
-//        }
-//        for (Facelet facelet : getFace(Rotator.DOWN)) {
-//            singmaster.append(ColorConverter.colorToSingmaster(facelet.getColor()));
-//        }
-//        for (Facelet facelet : getFace(Rotator.LEFT)) {
-//            singmaster.append(ColorConverter.colorToSingmaster(facelet.getColor()));
-//        }
-//        for (Facelet facelet : getFace(Rotator.BACK)) {
-//            singmaster.append(ColorConverter.colorToSingmaster(facelet.getColor()));
-//        }
-//        Log.d(TAG, "CUBE: " + singmaster);
-//        return singmaster.toString();
-//    }
 
 }

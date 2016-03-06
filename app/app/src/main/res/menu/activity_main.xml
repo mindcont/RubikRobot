@@ -12,12 +12,12 @@
                 android:orderInCategory="1"
                 android:showAsAction="always"
                 android:title="@string/scan" />
-            <item
-                android:id="@+id/menu_preview"
-                android:icon="@drawable/ic_preview"
-                android:orderInCategory="2"
-                android:showAsAction="always"
-                android:title="@string/cube_preview" />
+            <!--<item-->
+                <!--android:id="@+id/menu_preview"-->
+                <!--android:icon="@drawable/ic_preview"-->
+                <!--android:orderInCategory="2"-->
+                <!--android:showAsAction="always"-->
+                <!--android:title="@string/cube_preview" />-->
             <item
                 android:id="@+id/menu_about"
                 android:icon="@drawable/ic_info"

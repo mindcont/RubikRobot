@@ -44,4 +44,4 @@
             android:text="@string/creative_commons"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
-</LinearLayout><!-- From: file:/C:/Users/fenxi/Desktop/RubikRobot/app/src/main/res/layout/activity_about.xml -->
+</LinearLayout><!-- From: file:/D:/AndroidStudioProjects/RubikRobot/app/src/main/res/layout/activity_about.xml -->

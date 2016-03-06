@@ -17,4 +17,4 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="5dp"
-    android:textSize="18sp" /><!-- From: file:/C:/Users/fenxi/Desktop/RubikRobot/app/src/main/res/layout/device_name.xml -->
+    android:textSize="18sp" /><!-- From: file:/D:/AndroidStudioProjects/RubikRobot/app/src/main/res/layout/device_name.xml -->

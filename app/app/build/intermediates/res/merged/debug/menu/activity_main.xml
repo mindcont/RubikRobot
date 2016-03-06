@@ -12,12 +12,12 @@
                 android:orderInCategory="1"
                 android:showAsAction="always"
                 android:title="@string/scan" />
-            <item
-                android:id="@+id/menu_preview"
-                android:icon="@drawable/ic_preview"
-                android:orderInCategory="2"
-                android:showAsAction="always"
-                android:title="@string/cube_preview" />
+            <!--<item-->
+                <!--android:id="@+id/menu_preview"-->
+                <!--android:icon="@drawable/ic_preview"-->
+                <!--android:orderInCategory="2"-->
+                <!--android:showAsAction="always"-->
+                <!--android:title="@string/cube_preview" />-->
             <item
                 android:id="@+id/menu_about"
                 android:icon="@drawable/ic_info"
@@ -27,4 +27,4 @@
         </menu>
     </item>
 </menu>
-<!-- From: file:/C:/Users/fenxi/Desktop/RubikRobot/app/src/main/res/menu/activity_main.xml -->
+<!-- From: file:/D:/AndroidStudioProjects/RubikRobot/app/src/main/res/menu/activity_main.xml -->

@@ -3,6 +3,7 @@
 在项目初期，我们在[DigDream](https://github.com/DigDream/RubiksCubeRobot)下进行了仔细的研读和借用，并修改了部分文件以期适合我们的项目需求，旧版本详见reference文件夹。
 项目后期，由于DigDream项目过于复杂我们不得已又对app部分进行了重新编写，详见app文件夹。
 
+<iframe height=498 width=510 src="http://player.youku.com/embed/XMTQ5MTU5NzM4OA==" frameborder=0 allowfullscreen></iframe>
 ## 工程组织结构
 文件夹名 | 作用 |
 ---------|----------|
