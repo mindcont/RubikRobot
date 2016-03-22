@@ -1,13 +1,15 @@
 apply plugin: 'com.android.application'
 android {
     compileSdkVersion 17
-    buildToolsVersion '23.0.2'
+    buildToolsVersion "23.0.2"
     defaultConfig {
         applicationId 'com.mindcont.rubikrobot'
-        versionName '1.0'
-        minSdkVersion 17
-        targetSdkVersion 19
-        versionCode 1
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
     }
     productFlavors {
     }

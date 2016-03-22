@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mindcont.rubikrobot.test">
 
-    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="19" />
+    <uses-sdk android:minSdkVersion="1" android:targetSdkVersion="1" />
 
     <application>
         <uses-library android:name="android.test.runner" />

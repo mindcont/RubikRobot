@@ -16,5 +16,6 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:textSize="18sp"
     android:padding="5dp"
-    android:textSize="18sp" /><!-- From: file:/D:/AndroidStudioProjects/RubikRobot/app/src/main/res/layout/device_name.xml -->
+/><!-- From: file:/C:/Users/fenxi/Desktop/Rubik%20Robot/app/src/main/res/layout/device_name.xml -->

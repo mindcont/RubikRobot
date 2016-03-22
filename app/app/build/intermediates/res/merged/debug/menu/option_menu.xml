@@ -13,9 +13,12 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textSize="18sp"
-    android:padding="5dp"
-/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/scan"
+          android:icon="@android:drawable/ic_menu_search"
+          android:title="@string/connect" />
+    <item android:id="@+id/discoverable"
+          android:icon="@android:drawable/ic_menu_mylocation"
+          android:title="@string/discoverable" />
+</menu>
+<!-- From: file:/C:/Users/fenxi/Desktop/Rubik%20Robot/app/src/main/res/menu/option_menu.xml -->
