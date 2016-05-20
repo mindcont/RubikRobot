@@ -1,54 +1,74 @@
-/*  ÎÄ¼şÃû£ºmovement.c
- *ÎÄ¼şÃèÊö£º
- *±¸    ×¢: ÔÚ¼ÆËã¶æ»ú¶¯×÷Êı×éÊ±,¼Ç×¡ÓÃµ½µÄÊÇ¾ø¶ÔÎ»ÖÃ£¬¶ø²»ÊÇÏà¶ÔÎ»ÖÃ
+ï»¿/*  æ–‡ä»¶åï¼šmovement.c
+ *æ–‡ä»¶æè¿°ï¼šæŠŠé­”æ–¹æœºå™¨äººéœ€è¦å®Œæˆçš„ç‹¬ç«‹åŠ¨ä½œæ”¾å…¥ç›¸åº”çš„æ•°ç»„ä¸­ã€‚
+ *å¤‡    æ³¨: åœ¨è®¡ç®—èˆµæœºåŠ¨ä½œæ•°ç»„æ—¶,è®°ä½ç”¨åˆ°çš„æ˜¯ç»å¯¹ä½ç½®ï¼Œè€Œä¸æ˜¯ç›¸å¯¹ä½ç½®
  */
 #include "stm32f10x.h"
 #include "movement.h"
 #include "motor.h"
 #include "usart.h"
 #include "instruction.h"
-static const u16 original_position[4]={1475,1445,1525,1440};          /*³õÊ¼Î»ÖÃ1,2,3,4ºÅ¶æ»úµÄ½Ç¶È*/
-static const u16 clockwise90_position[4]={695,650,730,600};           /*ÓÉ³õÊ¼Î»ÖÃË³Ê±Õë×ª¶¯90¶ÈÊ±1,2,3,4ºÅ¶æ»úµÄ½Ç¶È*/
-static const u16 anticlockwise90_position[4]={2350,2230,2310,2270};   /*ÓÉ³õÊ¼Î»ÖÃÄæÊ±Õë×ª¶¯90¶ÈÊ±1,2,3,4ºÅ¶æ»úµÄ½Ç¶È*/
-static const u16 wrasp_position[4]={1995,1890,1990,1890};             /*»úĞµÊÖ×¥½ôÄ§·½Ê±5,6,7,8ºÅ¶æ»úµÄ½Ç¶È*/
-static const u16 loosen_position[4]={1480,1390,1450,1390};            /*»úĞµÊÖËÉ¿ªÄ§·½Ê±5,6,7,8ºÅ¶æ»úµÄ½Ç¶È*/
+static const u16 original_position[4]={1465,1450,1540,1405};          /*åˆå§‹ä½ç½®1,2,3,4å·èˆµæœºçš„è§’åº¦*/
+static const u16 clockwise90_position[4]={580,610,730,600};           /*ç”±åˆå§‹ä½ç½®é¡ºæ—¶é’ˆè½¬åŠ¨90åº¦æ—¶1,2,3,4å·èˆµæœºçš„è§’åº¦*/
+static const u16 anticlockwise90_position[4]={2380,2230,2310,2260};   /*ç”±åˆå§‹ä½ç½®é€†æ—¶é’ˆè½¬åŠ¨90åº¦æ—¶1,2,3,4å·èˆµæœºçš„è§’åº¦*/
+static const u16 wrasp_position[4]={2080,1840,1955,1860};             /*æœºæ¢°æ‰‹æŠ“ç´§é­”æ–¹æ—¶5,6,7,8å·èˆµæœºçš„è§’åº¦*/
+static const u16 loosen_position[4]={1580,1350,1475,1390};            /*æœºæ¢°æ‰‹æ¾å¼€é­”æ–¹æ—¶5,6,7,8å·èˆµæœºçš„è§’åº¦*/
  
 
 u16 lines_num;
 u16 initial_position[8];
-u16 firpic_position[3][8];
+u16 firpic_position[4][8];
 u16 secpic_position[1][8];
-u16 thirpic_position[3][8];
+u16 thirpic_position[4][8];
 u16 fourpic_position[1][8];
 u16 fifpic_position[4][8];
 u16 sixpic_position[1][8];
-u16 retuinit_position[5][8];
+u16 retuinit_position[4][8];
 
-u16 u_clockwise90[16][8];/*ÉÏ²ãË³Ê±Õë90¶È*/
-u16 d_clockwise90[16][8];/*ÏÂ²ãË³Ê±Õë90¶È*/
-u16 r_clockwise90[4][8]; /*ÓÒ²ãË³Ê±Õë90¶È*/
-u16 l_clockwise90[4][8]; /*×ó²ãË³Ê±Õë90¶È*/
-u16 f_clockwise90[4][8]; /*Ç°²ãË³Ê±Õë90¶È*/
-u16 b_clockwise90[4][8]; /*ºó²ãË³Ê±Õë90¶È*/
+u16 u_clockwise90[16][8];/*ä¸Šå±‚é¡ºæ—¶é’ˆ90åº¦*/
+u16 d_clockwise90[16][8];/*ä¸‹å±‚é¡ºæ—¶é’ˆ90åº¦*/
+u16 r_clockwise90[4][8]; /*å³å±‚é¡ºæ—¶é’ˆ90åº¦*/
+u16 l_clockwise90[4][8]; /*å·¦å±‚é¡ºæ—¶é’ˆ90åº¦*/
+u16 f_clockwise90[4][8]; /*å‰å±‚é¡ºæ—¶é’ˆ90åº¦*/
+u16 b_clockwise90[4][8]; /*åå±‚é¡ºæ—¶é’ˆ90åº¦*/
 
-u16 u_anticlockwise90[16][8];/*ÉÏ²ãÄæÊ±Õë90¶È*/
-u16 d_anticlockwise90[16][8];/*ÏÂ²ãÄæÊ±Õë90¶È*/
-u16 r_anticlockwise90[4][8]; /*ÓÒ²ãÄæÊ±Õë90¶È*/
-u16 l_anticlockwise90[4][8]; /*×ó²ãÄæÊ±Õë90¶È*/
-u16 f_anticlockwise90[4][8]; /*Ç°²ãÄæÊ±Õë90¶È*/
-u16 b_anticlockwise90[4][8]; /*ºó²ãÄæÊ±Õë90¶È*/
+u16 u_anticlockwise90[16][8];/*ä¸Šå±‚é€†æ—¶é’ˆ90åº¦*/
+u16 d_anticlockwise90[16][8];/*ä¸‹å±‚é€†æ—¶é’ˆ90åº¦*/
+u16 r_anticlockwise90[4][8]; /*å³å±‚é€†æ—¶é’ˆ90åº¦*/
+u16 l_anticlockwise90[4][8]; /*å·¦å±‚é€†æ—¶é’ˆ90åº¦*/
+u16 f_anticlockwise90[4][8]; /*å‰å±‚é€†æ—¶é’ˆ90åº¦*/
+u16 b_anticlockwise90[4][8]; /*åå±‚é€†æ—¶é’ˆ90åº¦*/
+
+u16 double_movement1[4][8];
+u16 double_movement2[4][8];
+u16 double_movement3[8][8];
+u16 double_movement4[4][8];
+u16 double_movement5[4][8];
+u16 double_movement6[8][8];
+u16 double_movement7[8][8];
+u16 double_movement8[8][8];
+u16 double_movement9[8][8];
+
+u16 double_movement10[4][8];
+u16 double_movement11[4][8];
+u16 double_movement12[8][8];
+u16 double_movement13[4][8];
+u16 double_movement14[4][8];
+u16 double_movement15[8][8];
+u16 double_movement16[8][8];
+u16 double_movement17[8][8];
+u16 double_movement18[8][8];
 
 
-/*×óÓÒÇ°ºóĞı×ª180¶ÈÊ±£¬Ö»ĞèÖ´ĞĞÁ½±éÄæÊ±Õë90¶È»òÕßÁ½±éË³Ê±Õë90¶ÈÊı×é*/
-u16 u_clock180[20][8];    /*ÉÏ²ã180¶È*/
-u16 d_clock180[20][8];    /*ÏÂ²ã180¶È*/
+/*å·¦å³å‰åæ—‹è½¬180åº¦æ—¶ï¼Œåªéœ€æ‰§è¡Œä¸¤éé€†æ—¶é’ˆ90åº¦æˆ–è€…ä¸¤éé¡ºæ—¶é’ˆ90åº¦æ•°ç»„*/
+u16 u_clock180[20][8];    /*ä¸Šå±‚180åº¦*/
+u16 d_clock180[20][8];    /*ä¸‹å±‚180åº¦*/
 
 
 /*
- *  º¯ÊıÃû£ºCalcul_IniticalPosition()
- *º¯Êı¹¦ÄÜ: ¼ÆËã¶æ»úµÄ³õÊ¼½Ç¶È
- *Êä    Èë: ÎŞ
- *Êä    ³ö: ÎŞ
+ *  å‡½æ•°åï¼šCalcul_IniticalPosition()
+ *å‡½æ•°åŠŸèƒ½: è®¡ç®—èˆµæœºçš„åˆå§‹è§’åº¦
+ *è¾“    å…¥: æ— 
+ *è¾“    å‡º: æ— 
  */
 void Calcul_InitPosition(void)
 {
@@ -63,41 +83,52 @@ void Calcul_InitPosition(void)
 	}
 }
 
-/*  º¯ÊıÃû:Calcul_FirPicPosition()
- *º¯Êı¹¦ÄÜ:¼ÆËãÅÄÕÕµÚÒ»¸öÃæµÄ¶æ»úÔËĞĞÊı×é
- *±¸    ×¢:Êı×é±êºÅ=¶æ»úºÅ-1 
+
+/*  å‡½æ•°å:Calcul_FirPicPosition()
+ *å‡½æ•°åŠŸèƒ½:è®¡ç®—æ‹ç…§ç¬¬ä¸€ä¸ªé¢çš„èˆµæœºè¿è¡Œæ•°ç»„(å…ˆæŠ“ç´§é­”æ–¹)
+ *å¤‡    æ³¨:æ•°ç»„æ ‡å·=èˆµæœºå·-1,æ‹ç…§å·¦é¢
  */
 void Calcul_FirPicPosition(void)
 {
 	u8 i;
-	Calcul_InitPosition();
 	
-	for(i=0;i<8;i++)                     /*µÚÒ»ĞĞ·Å³õÊ¼Î»ÖÃ*/
+	for(i=0;i<8;i++)                     /*ç¬¬ä¸€è¡Œæ”¾åˆå§‹ä½ç½®*/
 	{
 	  firpic_position[0][i]=initial_position[i];
 	}
+	firpic_position[0][5]=loosen_position[1];/*6æ¾å¼€*/
+	firpic_position[0][7]=loosen_position[3];/*8æ¾å¼€*/
 	
-	for(i=0;i<8;i++)                     /*µÚ¶şĞĞÔİÊ±¸´ÖÆµÚÒ»ĞĞ*/
+	for(i=0;i<8;i++)                    
 	{
-		firpic_position[1][i]=firpic_position[0][i];
+	  firpic_position[1][i]=initial_position[i];  /*5,6,7,8éƒ½æŠ“ç´§ï¼Œå›åˆ°åˆå§‹ä½ç½®*/
 	}
-	firpic_position[1][5]=loosen_position[1];            /*6ºóÍË*/
-	firpic_position[1][7]=loosen_position[3];            /*8ºóÍË*/
-
- 	for(i=0;i<8;i++)                     /*µÚÈıĞĞÔİÊ±¸´ÖÆµÚ¶şĞĞ*/
+	
+	/*ä¸‹é¢æ˜¯æ‹ç…§ç¯èŠ‚*/
+	
+	for(i=0;i<8;i++)                     /*ç¬¬äºŒè¡Œæš‚æ—¶å¤åˆ¶ç¬¬ä¸€è¡Œ*/
 	{
 		firpic_position[2][i]=firpic_position[1][i];
 	}
+	firpic_position[2][5]=loosen_position[1];            /*6åé€€*/
+	firpic_position[2][7]=loosen_position[3];            /*8åé€€*/
+
+ 	for(i=0;i<8;i++)                     /*ç¬¬ä¸‰è¡Œæš‚æ—¶å¤åˆ¶ç¬¬äºŒè¡Œ*/
+	{
+		firpic_position[3][i]=firpic_position[2][i];
+	}
 	
-	           /*ÅÄÕÕ×óÃæ*/                        
-		firpic_position[2][0]=clockwise90_position[0];      /*1Ë³Ê±Õë90¶È,*/
-		firpic_position[2][2]=anticlockwise90_position[2];  /*3ÄæÊ±Õë90¶È*/                        	
+	           /*æ‹ç…§å·¦é¢*/                        
+		firpic_position[3][0]=clockwise90_position[0];      /*1é¡ºæ—¶é’ˆ90åº¦,*/
+		firpic_position[3][2]=anticlockwise90_position[2];  /*3é€†æ—¶é’ˆ90åº¦*/                        	
+	
 }
 
 
-/*  º¯ÊıÃû:Calcul_SecPicPosition()
- *º¯Êı¹¦ÄÜ:¼ÆËãÅÄÕÕµÚ¶ş¸öÃæµÄ¶æ»úÔËĞĞÊı×é
- *±¸    ×¢:Êı×é±êºÅ=¶æ»úºÅ-1,ÏÈÔËĞĞCalcul_FirPicPosition()º¯Êı
+
+/*  å‡½æ•°å:Calcul_SecPicPosition()
+ *å‡½æ•°åŠŸèƒ½:è®¡ç®—æ‹ç…§ç¬¬äºŒä¸ªé¢çš„èˆµæœºè¿è¡Œæ•°ç»„
+ *å¤‡    æ³¨:æ•°ç»„æ ‡å·=èˆµæœºå·-1,å…ˆè¿è¡ŒCalcul_FirPicPosition()å‡½æ•°ï¼Œæ‹ç…§å³é¢
  */
 void Calcul_SecPicPosition(void)
 {
@@ -107,68 +138,77 @@ void Calcul_SecPicPosition(void)
 	{
 		secpic_position[0][i]=firpic_position[2][i];
 	}
-                      /*ÅÄÕÕÓÒÃæ*/   
- secpic_position[0][0]=anticlockwise90_position[0];       /*1ÄæÊ±Õë90¶È,*/ 
- secpic_position[0][2]=clockwise90_position[2];	          /*3Ë³Ê±Õë90¶È*/  
+                      /*æ‹ç…§å³é¢*/   
+ secpic_position[0][0]=anticlockwise90_position[0];       /*1é€†æ—¶é’ˆ90åº¦,*/ 
+ secpic_position[0][2]=clockwise90_position[2];	          /*3é¡ºæ—¶é’ˆ90åº¦*/  
 
 }
 
 
-/*  º¯ÊıÃû:Calcul_ThirPicPosition()
- *º¯Êı¹¦ÄÜ:¼ÆËãÅÄÕÕµÚÈı¸öÃæµÄ¶æ»úÔËĞĞÊı×é
- *±¸    ×¢:Êı×é±êºÅ=¶æ»úºÅ-1 
+/*  å‡½æ•°å:Calcul_ThirPicPosition()
+ *å‡½æ•°åŠŸèƒ½:è®¡ç®—æ‹ç…§ç¬¬ä¸‰ä¸ªé¢çš„èˆµæœºè¿è¡Œæ•°ç»„
+ *å¤‡    æ³¨:æ•°ç»„æ ‡å·=èˆµæœºå·-1ï¼Œæ‹ç…§å‰é¢
  */
 void Calcul_ThirPicPosition(void)
 {
 	u8 i;
+	
 	for(i=0;i<8;i++)
 	{
 		thirpic_position[0][i]=secpic_position[0][i];
 	}
 	
-	thirpic_position[0][5]=wrasp_position[1];  /*6Ç°½ø*/
-	thirpic_position[0][7]=wrasp_position[3];  /*8Ç°½ø*/
+	thirpic_position[0][5]=wrasp_position[1];  /*6å‰è¿›*/
+	thirpic_position[0][7]=wrasp_position[3];  /*8å‰è¿›*/
 	
 	for(i=0;i<8;i++)
 	{
-		thirpic_position[1][i]=thirpic_position[0][i];  /*¸´ÖÆµÚÒ»ĞĞµ½µÚ¶şĞĞ*/
+		thirpic_position[1][i]=thirpic_position[0][i];  /*å¤åˆ¶ç¬¬ä¸€è¡Œåˆ°ç¬¬äºŒè¡Œ*/
 	}
 	
-	thirpic_position[1][4]=loosen_position[0];   /*5ºóÍË*/
-	thirpic_position[1][6]=loosen_position[2];   /*7ºóÍË*/
+	thirpic_position[1][4]=loosen_position[0];   /*5åé€€*/
+	thirpic_position[1][6]=loosen_position[2];   /*7åé€€*/
 	
-		/*ÅÄÕÕÇ°Ãæ*/
 	for(i=0;i<8;i++)
 	{
-	  thirpic_position[2][i]=thirpic_position[1][i];  /*¸´ÖÆµÚÒ»ĞĞµ½µÚ¶şĞĞ*/
+	  thirpic_position[2][i]=thirpic_position[1][i];  
 	}
 	
-	thirpic_position[2][1]=clockwise90_position[1];                 /*2Ë³Ê±Õë*/
-	thirpic_position[2][3]=anticlockwise90_position[3];             /*4ÄæÊ±Õë*/
+	thirpic_position[2][0]=original_position[0]; /*1å›åˆ°åˆå§‹ä½ç½®*/
+	thirpic_position[2][2]=original_position[2]; /*3å›åˆ°åˆå§‹ä½ç½®*/
+	
+		/*æ‹ç…§å‰é¢*/
+	for(i=0;i<8;i++)
+	{
+	  thirpic_position[3][i]=thirpic_position[2][i];  /*å¤åˆ¶ç¬¬ä¸€è¡Œåˆ°ç¬¬äºŒè¡Œ*/
+	}
+	
+	thirpic_position[3][1]=clockwise90_position[1];                 /*2é¡ºæ—¶é’ˆ*/
+	thirpic_position[3][3]=anticlockwise90_position[3];             /*4é€†æ—¶é’ˆ*/
 	
 }
 
 
-/*  º¯ÊıÃû:Calcul_FourPicPosition()
- *º¯Êı¹¦ÄÜ:¼ÆËãÅÄÕÕµÚËÄ¸öÃæµÄ¶æ»úÔËĞĞÊı×é
- *±¸    ×¢:Êı×é±êºÅ=¶æ»úºÅ-1 
+/*  å‡½æ•°å:Calcul_FourPicPosition()
+ *å‡½æ•°åŠŸèƒ½:è®¡ç®—æ‹ç…§ç¬¬å››ä¸ªé¢çš„èˆµæœºè¿è¡Œæ•°ç»„
+ *å¤‡    æ³¨:æ•°ç»„æ ‡å·=èˆµæœºå·-1ï¼Œæ‹ç…§åé¢
  */
 void Calcul_FourPicPosition(void)
 {
 	 u8 i;
 	for(i=0;i<8;i++)
 		{
-			fourpic_position[0][i]=thirpic_position[2][i];   
+			fourpic_position[0][i]=thirpic_position[3][i];   
 		}
 		
-		/*ÅÄÕÕºóÃæ*/
-		fourpic_position[0][1]=anticlockwise90_position[1];  /*2ÄæÊ±Õë*/
-		fourpic_position[0][3]=clockwise90_position[3];      /*4Ë³Ê±Õë*/
+		/*æ‹ç…§åé¢*/
+		fourpic_position[0][1]=anticlockwise90_position[1];  /*2é€†æ—¶é’ˆ*/
+		fourpic_position[0][3]=clockwise90_position[3];      /*4é¡ºæ—¶é’ˆ*/
 }
 
-/*  º¯ÊıÃû:Calcul_FifPicPosition()
- *º¯Êı¹¦ÄÜ:¼ÆËãÅÄÕÕµÚÎå¸öÃæµÄ¶æ»úÔËĞĞÊı×é
- *±¸    ×¢:Êı×é±êºÅ=¶æ»úºÅ-1,ÉÏÃæ
+/*  å‡½æ•°å:Calcul_FifPicPosition()
+ *å‡½æ•°åŠŸèƒ½:è®¡ç®—æ‹ç…§ç¬¬äº”ä¸ªé¢çš„èˆµæœºè¿è¡Œæ•°ç»„
+ *å¤‡    æ³¨:æ•°ç»„æ ‡å·=èˆµæœºå·-1,æ‹ç…§ä¸Šé¢
  */
 void Calcul_FifPicPosition(void)
 {
@@ -178,41 +218,41 @@ void Calcul_FifPicPosition(void)
 		fifpic_position[0][i]=fourpic_position[0][i];
 	}
 	
-	fourpic_position[0][0]=original_position[0];	         /*1»Øµ½³õÊ¼Î»ÖÃ*/
-	fourpic_position[0][2]=original_position[2];	         /*3»Øµ½³õÊ¼Î»ÖÃ*/
-	
+  fifpic_position[0][4]=wrasp_position[0];		/*5å‰è¿›*/
+  fifpic_position[0][6]=wrasp_position[2];		/*7å‰è¿›*/	
+
 	for(i=0;i<8;i++)
 	{
 		fifpic_position[1][i]=fifpic_position[0][i];
 	}
 	
-  fifpic_position[1][4]=wrasp_position[0];		/*5Ç°½ø*/
-  fifpic_position[1][6]=wrasp_position[2];		/*7Ç°½ø*/	
-
+	fifpic_position[1][5]=loosen_position[1];   /*6åé€€*/
+	fifpic_position[1][7]=loosen_position[3];   /*8åé€€*/
+	
+	
 	for(i=0;i<8;i++)
 	{
 		fifpic_position[2][i]=fifpic_position[1][i];
 	}
 	
-	fifpic_position[2][5]=loosen_position[1];   /*6ºóÍË*/
-	fifpic_position[2][7]=loosen_position[3];   /*8ºóÍË*/
-	
-	
-	/*ÅÄÕÕÉÏÃæ*/
+	fifpic_position[2][1]=original_position[1];	/*2å›åˆ°åˆå§‹ä½ç½®*/
+	fifpic_position[2][3]=original_position[3];	/*4å›åˆ°åˆå§‹ä½ç½®*/
+		
+	/*æ‹ç…§ä¸Šé¢*/
 	for(i=0;i<8;i++)
 	{
 		fifpic_position[3][i]=fifpic_position[2][i];
 	}
 	
-	fifpic_position[3][0]=clockwise90_position[0];      /*1Ë³Ê±Õë*/
-	fifpic_position[3][2]=anticlockwise90_position[2];  /*3ÄæÊ±Õë*/
+	fifpic_position[3][0]=clockwise90_position[0];      /*1é¡ºæ—¶é’ˆ*/
+	fifpic_position[3][2]=anticlockwise90_position[2];  /*3é€†æ—¶é’ˆ*/
 	
 }
 
 
-/*  º¯ÊıÃû:Calcul_SixPicPosition()
- *º¯Êı¹¦ÄÜ:¼ÆËãÅÄÕÕµÚÁù¸öÃæµÄ¶æ»úÔËĞĞÊı×é
- *±¸    ×¢:Êı×é±êºÅ=¶æ»úºÅ-1 
+/*  å‡½æ•°å:Calcul_SixPicPosition()
+ *å‡½æ•°åŠŸèƒ½:è®¡ç®—æ‹ç…§ç¬¬å…­ä¸ªé¢çš„èˆµæœºè¿è¡Œæ•°ç»„
+ *å¤‡    æ³¨:æ•°ç»„æ ‡å·=èˆµæœºå·-1ï¼Œæ‹ç…§ä¸‹é¢ 
  */
 void Calcul_SixPicPosition(void)
 {
@@ -221,15 +261,15 @@ void Calcul_SixPicPosition(void)
 	{
 		sixpic_position[0][i]=fifpic_position[3][i];
 	}
-		/*ÅÄÕÕÏÂÃæ*/
-	sixpic_position[0][0]=anticlockwise90_position[0];/*1ÄæÊ±Õë*/
-	sixpic_position[0][2]=clockwise90_position[2];    /*3Ë³Ê±Õë*/
+		/*æ‹ç…§ä¸‹é¢*/
+	sixpic_position[0][0]=anticlockwise90_position[0];/*1é€†æ—¶é’ˆ*/
+	sixpic_position[0][2]=clockwise90_position[2];    /*3é¡ºæ—¶é’ˆ*/
 }
 
 
-/*  º¯ÊıÃû: RetuIni_AftPic()
- *º¯Êı¹¦ÄÜ: ÔÚÅÄÕÕÍê6¸öÃæÖ®ºó»Øµ½³õÊ¼Î»ÖÃ
- *±¸    ×¢£º°´ÕÕÔ­Â·µÄÄæÂ·¾¶·µ»Ø£¬²¢ÇÒºÍÔ­À´µÄ°Ú·ÅÎ»ÖÃÏàÍ¬
+/*  å‡½æ•°å: RetuIni_AftPic()
+ *å‡½æ•°åŠŸèƒ½: åœ¨æ‹ç…§å®Œ6ä¸ªé¢ä¹‹åå›åˆ°åˆå§‹ä½ç½®
+ *å¤‡    æ³¨ï¼šæŒ‰ç…§åŸè·¯çš„é€†è·¯å¾„è¿”å›ï¼Œå¹¶ä¸”å’ŒåŸæ¥çš„æ‘†æ”¾ä½ç½®ç›¸åŒï¼Œå®é™…ä¸Šåªéœ€è¦ä¸¤éƒ¨
  */
 void RetuIni_AftPic(void)
 {
@@ -240,50 +280,43 @@ void RetuIni_AftPic(void)
 		retuinit_position[0][i]=sixpic_position[0][i];
 	}	
 		
-	retuinit_position[0][1]=original_position[1];  /*2»Øµ½³õÊ¼Î»ÖÃ*/
-	retuinit_position[0][3]=original_position[3];  /*4»Øµ½³õÊ¼Î»ÖÃ*/
+	retuinit_position[0][5]=wrasp_position[1];  /*6å‰è¿›*/
+	retuinit_position[0][7]=wrasp_position[3];  /*8å‰è¿›*/
 	
 	for(i=0;i<8;i++)
 	{
 		retuinit_position[1][i]=retuinit_position[0][i];
 	}
-	retuinit_position[1][5]=wrasp_position[1];  /*6Ç°½ø*/
-	retuinit_position[1][7]=wrasp_position[3];  /*8Ç°½ø*/
+	retuinit_position[1][4]=loosen_position[0];  /*5åé€€*/
+	retuinit_position[1][6]=loosen_position[2];  /*7åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		retuinit_position[2][i]=retuinit_position[1][i];
 	}
-	retuinit_position[2][4]=loosen_position[0];  /*5ºóÍË*/
-	retuinit_position[2][6]=loosen_position[2];  /*7ºóÍË*/
 	
+	retuinit_position[2][0]=original_position[0]; /*1å›åˆ°åˆå§‹ä½ç½®*/ 
+	retuinit_position[2][2]=original_position[2]; /*3å›åˆ°åˆå§‹ä½ç½®*/ 
+		
 	for(i=0;i<8;i++)
 	{
 		retuinit_position[3][i]=retuinit_position[2][i];
 	}
 	
-	retuinit_position[3][0]=original_position[0]; /*1»Øµ½³õÊ¼Î»ÖÃ*/ 
-	retuinit_position[3][2]=original_position[2]; /*3»Øµ½³õÊ¼Î»ÖÃ*/ 
-		
-	for(i=0;i<8;i++)
-	{
-		retuinit_position[4][i]=retuinit_position[3][i];
-	}
-	
-	retuinit_position[4][4]=wrasp_position[0];    /*5Ç°½ø*/
-	retuinit_position[4][6]=wrasp_position[2];    /*7Ç°½ø*/	
+	retuinit_position[3][4]=wrasp_position[0];    /*5å‰è¿›*/
+	retuinit_position[3][6]=wrasp_position[2];    /*7å‰è¿›*/	
 
 }
 
 
 
 
-/*  º¯ÊıÃû: Calcul_Uclockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½ÉÏ²ãË³Ê±ÕëĞı×ª90µÄ¶æ»ú½Ç¶ÈÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º³õÊ¼»¯º¯Êı
- *±¸    ×¢£º³õÊ¼»¯µÄË³ĞòÒª×¢Òâ
+/*  å‡½æ•°å: Calcul_Uclockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹ä¸Šå±‚é¡ºæ—¶é’ˆæ—‹è½¬90çš„èˆµæœºè§’åº¦æ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šåˆå§‹åŒ–å‡½æ•°
+ *å¤‡    æ³¨ï¼šåˆå§‹åŒ–çš„é¡ºåºè¦æ³¨æ„
  */
 void Calcul_Uclockwise90(void)
 {
@@ -294,31 +327,31 @@ void Calcul_Uclockwise90(void)
 		u_clockwise90[0][i]=initial_position[i];
 	}
 	
-	u_clockwise90[0][5]=loosen_position[1]; /*6ºóÍË*/
-	u_clockwise90[0][7]=loosen_position[3]; /*8ºóÍË*/
+	u_clockwise90[0][5]=loosen_position[1]; /*6åé€€*/
+	u_clockwise90[0][7]=loosen_position[3]; /*8åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		u_clockwise90[1][i]=u_clockwise90[0][i];
 	}
 	
-	u_clockwise90[1][0]=clockwise90_position[0];       /*1Ë³Ê±Õë*/
-	u_clockwise90[1][2]=anticlockwise90_position[2];   /*3ÄæÊ±Õë*/
+	u_clockwise90[1][0]=clockwise90_position[0];       /*1é¡ºæ—¶é’ˆ*/
+	u_clockwise90[1][2]=anticlockwise90_position[2];   /*3é€†æ—¶é’ˆ*/
 	
 	for(i=0;i<8;i++)
 	{
 		u_clockwise90[2][i]=u_clockwise90[1][i];
 	}
 	
-	u_clockwise90[2][5]=wrasp_position[1]; /*6Ç°½ø*/
-	u_clockwise90[2][7]=wrasp_position[3]; /*8Ç°½ø*/
+	u_clockwise90[2][5]=wrasp_position[1]; /*6å‰è¿›*/
+	u_clockwise90[2][7]=wrasp_position[3]; /*8å‰è¿›*/
 	
 	for(i=0;i<8;i++)
 	{
 		u_clockwise90[3][i]=u_clockwise90[2][i];
 	}
-	u_clockwise90[3][4]=loosen_position[0]; /*5ºóÍË*/
-	u_clockwise90[3][6]=loosen_position[2]; /*7ºóÍË*/
+	u_clockwise90[3][4]=loosen_position[0]; /*5åé€€*/
+	u_clockwise90[3][6]=loosen_position[2]; /*7åé€€*/
 
 
 	for(i=0;i<8;i++)
@@ -326,26 +359,26 @@ void Calcul_Uclockwise90(void)
 		u_clockwise90[4][i]=u_clockwise90[3][i];
 	}
 	
-	 u_clockwise90[4][0]=original_position[0];/*1»Øµ½³õÊ¼Î»ÖÃ*/
-	 u_clockwise90[4][2]=original_position[2];/*3»Øµ½³õÊ¼Î»ÖÃ*/
+	 u_clockwise90[4][0]=original_position[0];/*1å›åˆ°åˆå§‹ä½ç½®*/
+	 u_clockwise90[4][2]=original_position[2];/*3å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		u_clockwise90[5][i]=u_clockwise90[4][i];
 	}
 	
-	u_clockwise90[5][4]=wrasp_position[0]; /*5Ç°½ø*/
-	u_clockwise90[5][6]=wrasp_position[2]; /*7Ç°½ø£¬´ËÊ±µ½´ï³õÊ¼Î»ÖÃ*/
+	u_clockwise90[5][4]=wrasp_position[0]; /*5å‰è¿›*/
+	u_clockwise90[5][6]=wrasp_position[2]; /*7å‰è¿›ï¼Œæ­¤æ—¶åˆ°è¾¾åˆå§‹ä½ç½®*/
 	
    
-/*Ç°Ãæ´úÂëºÍÄæÊ±ÕëĞı×ªµÄ´úÂëÏàÍ¬£¬Ç°ÃæÉú³ÉµÄÊı×éÏàÍ¬£¬ÏÂÃæÊÇÄ§·½ÓÒÃæË³Ê±ÕëĞı×ª90¶È*/	
+/*å‰é¢ä»£ç å’Œé€†æ—¶é’ˆæ—‹è½¬çš„ä»£ç ç›¸åŒï¼Œå‰é¢ç”Ÿæˆçš„æ•°ç»„ç›¸åŒï¼Œä¸‹é¢æ˜¯é­”æ–¹å³é¢é¡ºæ—¶é’ˆæ—‹è½¬90åº¦*/	
 	
 //	for(i=0;i<8;i++)
 //	{
 //		u_clockwise90[6][i]=u_clockwise90[5][i];
 //	}
 //	
-//	u_clockwise90[6][3]=anticlockwise90_position[3];/*4ÄæÊ±Õë*/
+//	u_clockwise90[6][3]=anticlockwise90_position[3];/*4é€†æ—¶é’ˆ*/
 //	
 //	 
 //	for(i=0;i<8;i++)
@@ -353,24 +386,24 @@ void Calcul_Uclockwise90(void)
 //		u_clockwise90[7][i]=u_clockwise90[6][i];
 //	}
 //	
-//	u_clockwise90[7][7]=loosen_position[3]; /*8ºóÍË*/
+//	u_clockwise90[7][7]=loosen_position[3]; /*8åé€€*/
 //	
 //	for(i=0;i<8;i++)
 //	{
 //		u_clockwise90[8][i]=u_clockwise90[7][i];
 //	}
 //	
-//	u_clockwise90[8][3]=original_position[3];/*4»Øµ½³õÊ¼Î»ÖÃ*/
+//	u_clockwise90[8][3]=original_position[3];/*4å›åˆ°åˆå§‹ä½ç½®*/
 //	
 //	for(i=0;i<8;i++)
 //	{
 //		u_clockwise90[9][i]=u_clockwise90[8][i];
 //	}
 //	
-//	u_clockwise90[9][7]=wrasp_position[3];   /*8Ç°½ø,´Ë¿Ìµ½´ï´¦ÓÖÒ»´Îµ½´ï³õÊ¼Î»ÖÃ*/
+//	u_clockwise90[9][7]=wrasp_position[3];   /*8å‰è¿›,æ­¤åˆ»åˆ°è¾¾å¤„åˆä¸€æ¬¡åˆ°è¾¾åˆå§‹ä½ç½®*/
 
 	
-	/*Ä§·½ÓÒÃæË³Ê±ÕëĞı×ª90¶È*/
+	/*é­”æ–¹å³é¢é¡ºæ—¶é’ˆæ—‹è½¬90åº¦*/
 	
 	for(j=6,k=0;j<=9;j++,k++)
 	{
@@ -381,15 +414,15 @@ void Calcul_Uclockwise90(void)
 	
 	}
 		
- /*ÏÂÃæÊÇ´Ó·Åµ¹µ½Ö±Á¢¹ı³Ì*/
+ /*ä¸‹é¢æ˜¯ä»æ”¾å€’åˆ°ç›´ç«‹è¿‡ç¨‹*/
 	
 	for(i=0;i<8;i++)
 	{
 		u_clockwise90[10][i]=u_clockwise90[9][i];
 	}
 
-	u_clockwise90[10][5]=loosen_position[1];	  /*6ºóÍË*/
-	u_clockwise90[10][7]=loosen_position[3];    /*8ºóÍË*/
+	u_clockwise90[10][5]=loosen_position[1];	  /*6åé€€*/
+	u_clockwise90[10][7]=loosen_position[3];    /*8åé€€*/
 	
 	
 	for(i=0;i<8;i++)
@@ -397,52 +430,52 @@ void Calcul_Uclockwise90(void)
 		u_clockwise90[11][i]=u_clockwise90[10][i];
 	}
 	
-	u_clockwise90[11][0]=anticlockwise90_position[0];	  /*1ÄæÊ±Õë*/
-	u_clockwise90[11][2]=clockwise90_position[2];       /*3Ë³Ê±Õë*/
+	u_clockwise90[11][0]=anticlockwise90_position[0];	  /*1é€†æ—¶é’ˆ*/
+	u_clockwise90[11][2]=clockwise90_position[2];       /*3é¡ºæ—¶é’ˆ*/
 	
 	for(i=0;i<8;i++)
 	{
 		u_clockwise90[12][i]=u_clockwise90[11][i];
 	}
 	
-	u_clockwise90[12][5]=wrasp_position[1];	 /*6Ç°½ø*/
-	u_clockwise90[12][7]=wrasp_position[3];  /*8Ç°½ø*/
+	u_clockwise90[12][5]=wrasp_position[1];	 /*6å‰è¿›*/
+	u_clockwise90[12][7]=wrasp_position[3];  /*8å‰è¿›*/
 	
 	for(i=0;i<8;i++)
 	{
 		u_clockwise90[13][i]=u_clockwise90[12][i];
 	}
 	
-	u_clockwise90[13][4]=loosen_position[0];	   /*5ºóÍË*/
-	u_clockwise90[13][6]=loosen_position[2];     /*7ºóÍË*/
+	u_clockwise90[13][4]=loosen_position[0];	   /*5åé€€*/
+	u_clockwise90[13][6]=loosen_position[2];     /*7åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		u_clockwise90[14][i]=u_clockwise90[13][i];
 	}
-	u_clockwise90[14][0]=original_position[0];	/*1»Øµ½³õÊ¼Î»ÖÃ*/
-	u_clockwise90[14][2]=original_position[2];  /*3»Øµ½³õÊ¼Î»ÖÃ*/
+	u_clockwise90[14][0]=original_position[0];	/*1å›åˆ°åˆå§‹ä½ç½®*/
+	u_clockwise90[14][2]=original_position[2];  /*3å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		u_clockwise90[15][i]=u_clockwise90[14][i];
 	}
-	u_clockwise90[15][4]=wrasp_position[0];   /*5Ç°½ø*/
-	u_clockwise90[15][6]=wrasp_position[2];	  /*7Ç°½ø*/  
+	u_clockwise90[15][4]=wrasp_position[0];   /*5å‰è¿›*/
+	u_clockwise90[15][6]=wrasp_position[2];	  /*7å‰è¿›*/  
 	
 }
 
-/*  º¯ÊıÃû: Calcul_Uanticlockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½ÉÏ²ãÄæÊ±ÕëĞı×ª90µÄ¶æ»ú½Ç¶ÈÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *±¸    ×¢£ºÏòÓÒ±ß·­×ª£¬ÉÏÃæ³¯ÓÒ,ÖØÓÃË³Ê±ÕëÉú³ÉµÄÊı×é
+/*  å‡½æ•°å: Calcul_Uanticlockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹ä¸Šå±‚é€†æ—¶é’ˆæ—‹è½¬90çš„èˆµæœºè§’åº¦æ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *å¤‡    æ³¨ï¼šå‘å³è¾¹ç¿»è½¬ï¼Œä¸Šé¢æœå³,é‡ç”¨é¡ºæ—¶é’ˆç”Ÿæˆçš„æ•°ç»„
  */
 void Calcul_Uanticlockwise90(void)
 {
 		u8 i,j,k;
 	
-	/*´Ó³õÊ¼Î»ÖÃµ½ÓÒ±ßµ¹µÄ¹ı³Ì*/
+	/*ä»åˆå§‹ä½ç½®åˆ°å³è¾¹å€’çš„è¿‡ç¨‹*/
 	for(i=0;i<=5;i++)
 	{
 		for(j=0;j<8;j++)
@@ -453,7 +486,7 @@ void Calcul_Uanticlockwise90(void)
 	}
 	
 	
-	/*Ä§·½ÓÒÃæÄæÊ±ÕëĞı×ª90¶È*/
+	/*é­”æ–¹å³é¢é€†æ—¶é’ˆæ—‹è½¬90åº¦*/
 	for(j=6,k=0;j<=9;j++,k++)
 	{
 		for(i=0;i<8;i++)
@@ -464,7 +497,7 @@ void Calcul_Uanticlockwise90(void)
 	}
 
 	
-	/*ÏÂÃæÊÇ´Ó·Åµ¹µ½Ö±Á¢¹ı³Ì*/
+	/*ä¸‹é¢æ˜¯ä»æ”¾å€’åˆ°ç›´ç«‹è¿‡ç¨‹*/
 	for(j=10;j<=15;j++)
 	{
 		
@@ -479,12 +512,12 @@ void Calcul_Uanticlockwise90(void)
 }
 
 
-/*  º¯ÊıÃû: Calcul_Dclockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½ÏÂ²ãË³Ê±ÕëĞı×ª90µÄ¶æ»ú½Ç¶ÈÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º±»³õÊ¼»¯º¯Êıµ÷ÓÃ
- *±¸    ×¢£ºÏò×ó·­×ª£¬ÏÂÃæ³¯ÓÒ£¬ÁíÍâ×¢Òâ³õÊ¼»¯º¯Êıµ÷ÓÃµÄË³Ğò£¬ÄæÊ±ÕëÔÚË³Ê±ÕëÖ®ºóµ÷ÓÃ
+/*  å‡½æ•°å: Calcul_Dclockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹ä¸‹å±‚é¡ºæ—¶é’ˆæ—‹è½¬90çš„èˆµæœºè§’åº¦æ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šè¢«åˆå§‹åŒ–å‡½æ•°è°ƒç”¨
+ *å¤‡    æ³¨ï¼šå‘å·¦ç¿»è½¬ï¼Œä¸‹é¢æœå³ï¼Œå¦å¤–æ³¨æ„åˆå§‹åŒ–å‡½æ•°è°ƒç”¨çš„é¡ºåºï¼Œé€†æ—¶é’ˆåœ¨é¡ºæ—¶é’ˆä¹‹åè°ƒç”¨
  */
 void Calcul_Dclockwise90(void)
 {
@@ -495,31 +528,31 @@ void Calcul_Dclockwise90(void)
 		d_clockwise90[0][i]=initial_position[i];
 	}
 	
-	d_clockwise90[0][5]=loosen_position[1];/*6ºóÍË*/
-	d_clockwise90[0][7]=loosen_position[3];/*8ºóÍË*/
+	d_clockwise90[0][5]=loosen_position[1];/*6åé€€*/
+	d_clockwise90[0][7]=loosen_position[3];/*8åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		d_clockwise90[1][i]=d_clockwise90[0][i];
 	}
 	
-	d_clockwise90[1][0]=anticlockwise90_position[0];       /*1ÄæÊ±Õë*/
-	d_clockwise90[1][2]=clockwise90_position[2];           /*3Ë³Ê±Õë£¬Íê³ÉÏò×ó·­×ªµÄ¶¯×÷*/
+	d_clockwise90[1][0]=anticlockwise90_position[0];       /*1é€†æ—¶é’ˆ*/
+	d_clockwise90[1][2]=clockwise90_position[2];           /*3é¡ºæ—¶é’ˆï¼Œå®Œæˆå‘å·¦ç¿»è½¬çš„åŠ¨ä½œ*/
 	
 	for(i=0;i<8;i++)
 	{
 		d_clockwise90[2][i]=d_clockwise90[1][i];
 	}
 	
-	d_clockwise90[2][5]=wrasp_position[1]; /*6Ç°½ø*/
-	d_clockwise90[2][7]=wrasp_position[3]; /*8Ç°½ø*/
+	d_clockwise90[2][5]=wrasp_position[1]; /*6å‰è¿›*/
+	d_clockwise90[2][7]=wrasp_position[3]; /*8å‰è¿›*/
 	
 	for(i=0;i<8;i++)
 	{
 		d_clockwise90[3][i]=d_clockwise90[2][i];
 	}
-	d_clockwise90[3][4]=loosen_position[0]; /*5ºóÍË*/
-	d_clockwise90[3][6]=loosen_position[2]; /*7ºóÍË*/
+	d_clockwise90[3][4]=loosen_position[0]; /*5åé€€*/
+	d_clockwise90[3][6]=loosen_position[2]; /*7åé€€*/
 
 
 	for(i=0;i<8;i++)
@@ -527,26 +560,26 @@ void Calcul_Dclockwise90(void)
 		d_clockwise90[4][i]=d_clockwise90[3][i];
 	}
 	
-	 d_clockwise90[4][0]=original_position[0];/*1»Øµ½³õÊ¼Î»ÖÃ*/
-	 d_clockwise90[4][2]=original_position[2];/*3»Øµ½³õÊ¼Î»ÖÃ*/
+	 d_clockwise90[4][0]=original_position[0];/*1å›åˆ°åˆå§‹ä½ç½®*/
+	 d_clockwise90[4][2]=original_position[2];/*3å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		d_clockwise90[5][i]=d_clockwise90[4][i];
 	}
 	
-	d_clockwise90[5][4]=wrasp_position[0]; /*5Ç°½ø*/
-	d_clockwise90[5][6]=wrasp_position[2]; /*7Ç°½ø£¬´ËÊ±µ½´ï³õÊ¼Î»ÖÃ*/
+	d_clockwise90[5][4]=wrasp_position[0]; /*5å‰è¿›*/
+	d_clockwise90[5][6]=wrasp_position[2]; /*7å‰è¿›ï¼Œæ­¤æ—¶åˆ°è¾¾åˆå§‹ä½ç½®*/
    
 	
-	/*Ç°Ãæ´úÂëºÍÄæÊ±ÕëĞı×ªµÄ´úÂëÏàÍ¬£¬Ç°ÃæÉú³ÉµÄÊı×éÏàÍ¬*/
+	/*å‰é¢ä»£ç å’Œé€†æ—¶é’ˆæ—‹è½¬çš„ä»£ç ç›¸åŒï¼Œå‰é¢ç”Ÿæˆçš„æ•°ç»„ç›¸åŒ*/
 	
 //	for(i=0;i<8;i++)
 //	{
 //		d_clockwise90[6][i]=d_clockwise90[5][i];
 //	}
 //	
-//	d_clockwise90[6][3]=anticlockwise90_position[3];/*4ÄæÊ±Õë*/
+//	d_clockwise90[6][3]=anticlockwise90_position[3];/*4é€†æ—¶é’ˆ*/
 //	
 //	 
 //	for(i=0;i<8;i++)
@@ -554,24 +587,24 @@ void Calcul_Dclockwise90(void)
 //		d_clockwise90[7][i]=d_clockwise90[6][i];
 //	}
 //	
-//	d_clockwise90[7][7]=loosen_position[3]; /*8ºóÍË*/
+//	d_clockwise90[7][7]=loosen_position[3]; /*8åé€€*/
 //	
 //	for(i=0;i<8;i++)
 //	{
 //		d_clockwise90[8][i]=d_clockwise90[7][i];
 //	}
 //	
-//	d_clockwise90[8][3]=original_position[3];/*4»Øµ½³õÊ¼Î»ÖÃ*/
+//	d_clockwise90[8][3]=original_position[3];/*4å›åˆ°åˆå§‹ä½ç½®*/
 //	
 //	for(i=0;i<8;i++)
 //	{
 //		d_clockwise90[9][i]=d_clockwise90[8][i];
 //	}
 //
-//	d_clockwise90[9][7]=wrasp_position[3];   /*8Ç°½ø,´Ë¿Ìµ½´ï´¦ÓÖÒ»´Îµ½´ï³õÊ¼Î»ÖÃ*/
+//	d_clockwise90[9][7]=wrasp_position[3];   /*8å‰è¿›,æ­¤åˆ»åˆ°è¾¾å¤„åˆä¸€æ¬¡åˆ°è¾¾åˆå§‹ä½ç½®*/
 
 
-	/*Ä§·½ÓÒÃæË³Ê±ÕëĞı×ª90¶È*/
+	/*é­”æ–¹å³é¢é¡ºæ—¶é’ˆæ—‹è½¬90åº¦*/
 	for(j=6,k=0;j<=9;j++,k++)
 	{
 		for(i=0;i<8;i++)
@@ -582,15 +615,15 @@ void Calcul_Dclockwise90(void)
 	}
 
 	
-	/*ÏÂÃæÊÇ´Ó·Åµ¹µ½Ö±Á¢¹ı³Ì*/
+	/*ä¸‹é¢æ˜¯ä»æ”¾å€’åˆ°ç›´ç«‹è¿‡ç¨‹*/
 	
 	for(i=0;i<8;i++)
 	{
 		d_clockwise90[10][i]=d_clockwise90[9][i];
 	}
 
-	d_clockwise90[10][5]=loosen_position[1];	  /*6ºóÍË*/
-	d_clockwise90[10][7]=loosen_position[3];    /*8ºóÍË*/
+	d_clockwise90[10][5]=loosen_position[1];	  /*6åé€€*/
+	d_clockwise90[10][7]=loosen_position[3];    /*8åé€€*/
 	
 	
 	for(i=0;i<8;i++)
@@ -598,54 +631,54 @@ void Calcul_Dclockwise90(void)
 		d_clockwise90[11][i]=d_clockwise90[10][i];
 	}
 	
-	d_clockwise90[11][0]=clockwise90_position[0];	        /*1Ë³Ê±Õë*/
-	d_clockwise90[11][2]=anticlockwise90_position[2];     /*3ÄæÊ±Õë*/
+	d_clockwise90[11][0]=clockwise90_position[0];	        /*1é¡ºæ—¶é’ˆ*/
+	d_clockwise90[11][2]=anticlockwise90_position[2];     /*3é€†æ—¶é’ˆ*/
 	
 	for(i=0;i<8;i++)
 	{
 		d_clockwise90[12][i]=d_clockwise90[11][i];
 	}
 	
-	d_clockwise90[12][5]=wrasp_position[1];	 /*6Ç°½ø*/
-	d_clockwise90[12][7]=wrasp_position[3];  /*8Ç°½ø*/
+	d_clockwise90[12][5]=wrasp_position[1];	 /*6å‰è¿›*/
+	d_clockwise90[12][7]=wrasp_position[3];  /*8å‰è¿›*/
 	
 	for(i=0;i<8;i++)
 	{
 		d_clockwise90[13][i]=d_clockwise90[12][i];
 	}
 	
-	d_clockwise90[13][4]=loosen_position[0];	   /*5ºóÍË*/
-	d_clockwise90[13][6]=loosen_position[2];     /*7ºóÍË*/
+	d_clockwise90[13][4]=loosen_position[0];	   /*5åé€€*/
+	d_clockwise90[13][6]=loosen_position[2];     /*7åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		d_clockwise90[14][i]=d_clockwise90[13][i];
 	}
-	d_clockwise90[14][0]=original_position[0];	/*1»Øµ½³õÊ¼Î»ÖÃ*/
-	d_clockwise90[14][2]=original_position[2];  /*3»Øµ½³õÊ¼Î»ÖÃ*/
+	d_clockwise90[14][0]=original_position[0];	/*1å›åˆ°åˆå§‹ä½ç½®*/
+	d_clockwise90[14][2]=original_position[2];  /*3å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		d_clockwise90[15][i]=d_clockwise90[14][i];
 	}
-	d_clockwise90[15][4]=wrasp_position[0];      /*5Ç°½ø*/
-	d_clockwise90[15][6]=wrasp_position[2];	     /*7Ç°½ø*/  
+	d_clockwise90[15][4]=wrasp_position[0];      /*5å‰è¿›*/
+	d_clockwise90[15][6]=wrasp_position[2];	     /*7å‰è¿›*/  
 
 }
 
 
-/*  º¯ÊıÃû: Calcul_Danticlockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½ÏÂ²ãÄæÊ±ÕëĞı×ª90µÄ¶æ»ú½Ç¶ÈÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *±¸    ×¢£ºÏò×ó·­×ª£¬ÏÂÃæ³¯ÓÒ
+/*  å‡½æ•°å: Calcul_Danticlockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹ä¸‹å±‚é€†æ—¶é’ˆæ—‹è½¬90çš„èˆµæœºè§’åº¦æ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *å¤‡    æ³¨ï¼šå‘å·¦ç¿»è½¬ï¼Œä¸‹é¢æœå³
  */
 void Calcul_Danticlockwise90(void)
 {
 	
     u8 i,j,k;
 	
-	/*´Ó³õÊ¼Î»ÖÃÏò×ó·­×ª*/
+	/*ä»åˆå§‹ä½ç½®å‘å·¦ç¿»è½¬*/
 	for(i=0;i<=5;i++)
 	{
 		for(j=0;j<8;j++)
@@ -656,7 +689,7 @@ void Calcul_Danticlockwise90(void)
 	}
 	
 	
-	/*Ä§·½ÓÒÃæÄæÊ±ÕëĞı×ª90¶È,*/
+	/*é­”æ–¹å³é¢é€†æ—¶é’ˆæ—‹è½¬90åº¦,*/
 	for(j=6,k=0;j<=9;j++,k++)
 	{
 		for(i=0;i<8;i++)
@@ -667,7 +700,7 @@ void Calcul_Danticlockwise90(void)
 	}
 
 	
-	/*ÏÂÃæÊÇ´Ó·Åµ¹µ½Ö±Á¢¹ı³Ì*/
+	/*ä¸‹é¢æ˜¯ä»æ”¾å€’åˆ°ç›´ç«‹è¿‡ç¨‹*/
 	for(j=10;j<=15;j++)
 	{
 		
@@ -682,12 +715,12 @@ void Calcul_Danticlockwise90(void)
 }
 
 
-/*  º¯ÊıÃû£ºCalcul_Lclockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½×óÃæË³Ê±ÕëĞı×ª90¶ÈµÄ¶æ»úÖ´ĞĞÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º³õÊ¼»¯º¯Êı
- *±¸    ×¢£ºÏÈµ÷ÓÃinitial_position()º¯Êı
+/*  å‡½æ•°åï¼šCalcul_Lclockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹å·¦é¢é¡ºæ—¶é’ˆæ—‹è½¬90åº¦çš„èˆµæœºæ‰§è¡Œæ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šåˆå§‹åŒ–å‡½æ•°
+ *å¤‡    æ³¨ï¼šå…ˆè°ƒç”¨initial_position()å‡½æ•°
  */
 void Calcul_Lclockwise90(void)
 {
@@ -699,39 +732,39 @@ void Calcul_Lclockwise90(void)
 		l_clockwise90[0][i]=initial_position[i];
 	}
 	
-	l_clockwise90[0][1]=anticlockwise90_position[1];/*2ÄæÊ±Õë*/
+	l_clockwise90[0][1]=anticlockwise90_position[1];/*2é€†æ—¶é’ˆ*/
 	
 	for(i=0;i<8;i++)
 	{
 		l_clockwise90[1][i]=l_clockwise90[0][i];
 	}
 	
-	l_clockwise90[1][5]=loosen_position[1]; /*6ºóÍË*/
+	l_clockwise90[1][5]=loosen_position[1]; /*6åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		l_clockwise90[2][i]=l_clockwise90[1][i];
 	}
 	
-	l_clockwise90[2][1]=original_position[1];/*2»Øµ½³õÊ¼Î»ÖÃ*/
+	l_clockwise90[2][1]=original_position[1];/*2å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		l_clockwise90[3][i]=l_clockwise90[2][i];
 	}
 	
-	l_clockwise90[3][5]=wrasp_position[1]; /*6Ç°½ø*/
+	l_clockwise90[3][5]=wrasp_position[1]; /*6å‰è¿›*/
 	
 	
 }
 
 
-/*  º¯ÊıÃû£ºCalcul_Lanticlockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½×óÃæÄæÊ±ÕëĞı×ª90¶ÈµÄ¶æ»úÖ´ĞĞÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º³õÊ¼»¯º¯Êı
- *±¸    ×¢£ºÏÈµ÷ÓÃinitial_position()º¯Êı
+/*  å‡½æ•°åï¼šCalcul_Lanticlockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹å·¦é¢é€†æ—¶é’ˆæ—‹è½¬90åº¦çš„èˆµæœºæ‰§è¡Œæ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šåˆå§‹åŒ–å‡½æ•°
+ *å¤‡    æ³¨ï¼šå…ˆè°ƒç”¨initial_position()å‡½æ•°
  */
 void Calcul_Lanticlockwise90(void)
 {
@@ -742,40 +775,40 @@ void Calcul_Lanticlockwise90(void)
 		l_anticlockwise90[0][i]=initial_position[i];
 	}
 	
-	l_anticlockwise90[0][1]=clockwise90_position[1];/*2Ë³Ê±Õë*/
+	l_anticlockwise90[0][1]=clockwise90_position[1];/*2é¡ºæ—¶é’ˆ*/
 	
 	for(i=0;i<8;i++)
 	{
 		l_anticlockwise90[1][i]=l_anticlockwise90[0][i];
 	}
 	
-	l_anticlockwise90[1][5]=loosen_position[1]; /*6ºóÍË*/
+	l_anticlockwise90[1][5]=loosen_position[1]; /*6åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		l_anticlockwise90[2][i]=l_anticlockwise90[1][i];
 	}
 	
-	l_anticlockwise90[2][1]=original_position[1];/*2»Øµ½³õÊ¼Î»ÖÃ*/
+	l_anticlockwise90[2][1]=original_position[1];/*2å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		l_anticlockwise90[3][i]=l_anticlockwise90[2][i];
 	}
 	
-	l_anticlockwise90[3][5]=wrasp_position[1]; /*6Ç°½ø*/
+	l_anticlockwise90[3][5]=wrasp_position[1]; /*6å‰è¿›*/
 	
 
 }
 
 
 
-/*  º¯ÊıÃû£ºCalcul_Rclockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½ÓÒÃæË³Ê±ÕëĞı×ª90¶ÈµÄ¶æ»úÖ´ĞĞÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º³õÊ¼»¯º¯Êı
- *±¸    ×¢£ºÏÈµ÷ÓÃinitial_position()º¯Êı
+/*  å‡½æ•°åï¼šCalcul_Rclockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹å³é¢é¡ºæ—¶é’ˆæ—‹è½¬90åº¦çš„èˆµæœºæ‰§è¡Œæ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šåˆå§‹åŒ–å‡½æ•°
+ *å¤‡    æ³¨ï¼šå…ˆè°ƒç”¨initial_position()å‡½æ•°
  */
 void Calcul_Rclockwise90(void)
 {
@@ -786,39 +819,39 @@ void Calcul_Rclockwise90(void)
 		r_clockwise90[0][i]=initial_position[i];
 	}
 	
-	r_clockwise90[0][3]=anticlockwise90_position[3];/*4ÄæÊ±Õë*/
+	r_clockwise90[0][3]=anticlockwise90_position[3];/*4é€†æ—¶é’ˆ*/
 	
 	for(i=0;i<8;i++)
 	{
 		r_clockwise90[1][i]=r_clockwise90[0][i];
 	}
 	
-	r_clockwise90[1][7]=loosen_position[3]; /*8ºóÍË*/
+	r_clockwise90[1][7]=loosen_position[3]; /*8åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		r_clockwise90[2][i]=r_clockwise90[1][i];
 	}
 	
-	r_clockwise90[2][3]=original_position[3];/*4»Øµ½³õÊ¼Î»ÖÃ*/
+	r_clockwise90[2][3]=original_position[3];/*4å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		r_clockwise90[3][i]=r_clockwise90[2][i];
 	}
 	
-	r_clockwise90[3][7]=wrasp_position[3]; /*8Ç°½ø*/
+	r_clockwise90[3][7]=wrasp_position[3]; /*8å‰è¿›*/
 	
 }
 
 
 
-/*  º¯ÊıÃû£ºCalcul_Ranticlockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½ÓÒÃæÄæÊ±ÕëĞı×ª90¶ÈµÄ¶æ»úÖ´ĞĞÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º³õÊ¼»¯º¯Êı
- *±¸    ×¢£ºÏÈµ÷ÓÃinitial_position()º¯Êı
+/*  å‡½æ•°åï¼šCalcul_Ranticlockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹å³é¢é€†æ—¶é’ˆæ—‹è½¬90åº¦çš„èˆµæœºæ‰§è¡Œæ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šåˆå§‹åŒ–å‡½æ•°
+ *å¤‡    æ³¨ï¼šå…ˆè°ƒç”¨initial_position()å‡½æ•°
  */
 void Calcul_Ranticlockwise90(void)
 {
@@ -829,39 +862,39 @@ void Calcul_Ranticlockwise90(void)
 		r_anticlockwise90[0][i]=initial_position[i];
 	}
 	
-    r_anticlockwise90[0][3]=clockwise90_position[3];/*4Ë³Ê±Õë*/
+    r_anticlockwise90[0][3]=clockwise90_position[3];/*4é¡ºæ—¶é’ˆ*/
 	
 	for(i=0;i<8;i++)
 	{
 		r_anticlockwise90[1][i]=r_anticlockwise90[0][i];
 	}
 	
-	r_anticlockwise90[1][7]=loosen_position[3]; /*8ºóÍË*/
+	r_anticlockwise90[1][7]=loosen_position[3]; /*8åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		r_anticlockwise90[2][i]=r_anticlockwise90[1][i];
 	}
 	
-	r_anticlockwise90[2][3]=original_position[3];/*4»Øµ½³õÊ¼Î»ÖÃ*/
+	r_anticlockwise90[2][3]=original_position[3];/*4å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		r_anticlockwise90[3][i]=r_anticlockwise90[2][i];
 	}
 	
-	r_anticlockwise90[3][7]=wrasp_position[3]; /*8Ç°½ø*/
+	r_anticlockwise90[3][7]=wrasp_position[3]; /*8å‰è¿›*/
 	
 }
 
 
 
-/*  º¯ÊıÃû£ºCalcul_Fclockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½Ç°ÃæË³Ê±ÕëĞı×ª90¶ÈµÄ¶æ»úÖ´ĞĞÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º³õÊ¼»¯º¯Êı
- *±¸    ×¢£º
+/*  å‡½æ•°åï¼šCalcul_Fclockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹å‰é¢é¡ºæ—¶é’ˆæ—‹è½¬90åº¦çš„èˆµæœºæ‰§è¡Œæ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šåˆå§‹åŒ–å‡½æ•°
+ *å¤‡    æ³¨ï¼š
  */
 void Calcul_Fclockwise90(void)
 {
@@ -872,38 +905,38 @@ void Calcul_Fclockwise90(void)
 		f_clockwise90[0][i]=initial_position[i];
 	}
 	
-	f_clockwise90[0][2]=anticlockwise90_position[2];/*3ÄæÊ±Õë*/
+	f_clockwise90[0][2]=anticlockwise90_position[2];/*3é€†æ—¶é’ˆ*/
 	
 	for(i=0;i<8;i++)
 	{
 		f_clockwise90[1][i]=f_clockwise90[0][i];
 	}
 	
-	f_clockwise90[1][6]=loosen_position[2]; /*7ºóÍË*/
+	f_clockwise90[1][6]=loosen_position[2]; /*7åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		f_clockwise90[2][i]=f_clockwise90[1][i];
 	}
 	
-	f_clockwise90[2][2]=original_position[2];/*3»Øµ½³õÊ¼Î»ÖÃ*/
+	f_clockwise90[2][2]=original_position[2];/*3å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		f_clockwise90[3][i]=f_clockwise90[2][i];
 	}
 	
-	f_clockwise90[3][6]=wrasp_position[2]; /*7Ç°½ø*/
+	f_clockwise90[3][6]=wrasp_position[2]; /*7å‰è¿›*/
 	
 }
 
 
-/*  º¯ÊıÃû£ºCalcul_Fanticlockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½Ç°ÃæÄæÊ±ÕëĞı×ª90¶ÈµÄ¶æ»úÖ´ĞĞÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º³õÊ¼»¯º¯Êı
- *±¸    ×¢£º
+/*  å‡½æ•°åï¼šCalcul_Fanticlockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹å‰é¢é€†æ—¶é’ˆæ—‹è½¬90åº¦çš„èˆµæœºæ‰§è¡Œæ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šåˆå§‹åŒ–å‡½æ•°
+ *å¤‡    æ³¨ï¼š
  */
 void Calcul_Fanticlockwise90(void)
 {
@@ -914,37 +947,37 @@ void Calcul_Fanticlockwise90(void)
 		f_anticlockwise90[0][i]=initial_position[i];
 	}
 	
-	f_anticlockwise90[0][2]=clockwise90_position[2];/*3Ë³Ê±Õë*/
+	f_anticlockwise90[0][2]=clockwise90_position[2];/*3é¡ºæ—¶é’ˆ*/
 	
 	for(i=0;i<8;i++)
 	{
 		f_anticlockwise90[1][i]=f_anticlockwise90[0][i];
 	}
 	
-	f_anticlockwise90[1][6]=loosen_position[2]; /*7ºóÍË*/
+	f_anticlockwise90[1][6]=loosen_position[2]; /*7åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		f_anticlockwise90[2][i]=f_anticlockwise90[1][i];
 	}
 	
-	f_anticlockwise90[2][2]=original_position[2];/*3»Øµ½³õÊ¼Î»ÖÃ*/
+	f_anticlockwise90[2][2]=original_position[2];/*3å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		f_anticlockwise90[3][i]=f_anticlockwise90[2][i];
 	}
 	
-	f_anticlockwise90[3][6]=wrasp_position[2]; /*7Ç°½ø*/
+	f_anticlockwise90[3][6]=wrasp_position[2]; /*7å‰è¿›*/
 	
 }
 
-/*  º¯ÊıÃû£ºCalcul_	Bclockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½ºóÃæË³Ê±ÕëĞı×ª90¶ÈµÄ¶æ»úÖ´ĞĞÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º³õÊ¼»¯º¯Êı
- *±¸    ×¢£º
+/*  å‡½æ•°åï¼šCalcul_	Bclockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹åé¢é¡ºæ—¶é’ˆæ—‹è½¬90åº¦çš„èˆµæœºæ‰§è¡Œæ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šåˆå§‹åŒ–å‡½æ•°
+ *å¤‡    æ³¨ï¼š
  */
 void Calcul_Bclockwise90(void)
 {
@@ -955,38 +988,38 @@ void Calcul_Bclockwise90(void)
 		b_clockwise90[0][i]=initial_position[i];
 	}
 	
-	b_clockwise90[0][0]=anticlockwise90_position[0];/*1ÄæÊ±Õë*/
+	b_clockwise90[0][0]=anticlockwise90_position[0];/*1é€†æ—¶é’ˆ*/
 	
 	for(i=0;i<8;i++)
 	{
 		b_clockwise90[1][i]=b_clockwise90[0][i];
 	}
 	
-	b_clockwise90[1][4]=loosen_position[0]; /*5ºóÍË*/
+	b_clockwise90[1][4]=loosen_position[0]; /*5åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		b_clockwise90[2][i]=b_clockwise90[1][i];
 	}
 	
-	b_clockwise90[2][0]=original_position[0];/*1»Øµ½³õÊ¼Î»ÖÃ*/
+	b_clockwise90[2][0]=original_position[0];/*1å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		b_clockwise90[3][i]=b_clockwise90[2][i];
 	}
 	
-	b_clockwise90[3][4]=wrasp_position[0]; /*5Ç°½ø*/
+	b_clockwise90[3][4]=wrasp_position[0]; /*5å‰è¿›*/
 	
 
 }
 
-/*  º¯ÊıÃû£ºCalcul_	Bantianticlockwise90()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½ºóÃæÄæÊ±ÕëĞı×ª90¶ÈµÄ¶æ»úÖ´ĞĞÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º³õÊ¼»¯º¯Êı
- *±¸    ×¢£º
+/*  å‡½æ•°åï¼šCalcul_	Bantianticlockwise90()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹åé¢é€†æ—¶é’ˆæ—‹è½¬90åº¦çš„èˆµæœºæ‰§è¡Œæ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šåˆå§‹åŒ–å‡½æ•°
+ *å¤‡    æ³¨ï¼š
  */
 void Calcul_Banticlockwise90(void)
 {
@@ -997,46 +1030,46 @@ void Calcul_Banticlockwise90(void)
 		b_anticlockwise90[0][i]=initial_position[i];
 	}
 	
-	b_anticlockwise90[0][0]=clockwise90_position[0];    /*1Ë³Ê±Õë*/
+	b_anticlockwise90[0][0]=clockwise90_position[0];    /*1é¡ºæ—¶é’ˆ*/
 	
 	for(i=0;i<8;i++)
 	{
 		b_anticlockwise90[1][i]=b_anticlockwise90[0][i];
 	}
 	
-	b_anticlockwise90[1][4]=loosen_position[0];         /*5ºóÍË*/
+	b_anticlockwise90[1][4]=loosen_position[0];         /*5åé€€*/
 	
 	for(i=0;i<8;i++)
 	{
 		b_anticlockwise90[2][i]=b_anticlockwise90[1][i];
 	}
 	
-	b_anticlockwise90[2][0]=original_position[0];      /*1»Øµ½³õÊ¼Î»ÖÃ*/
+	b_anticlockwise90[2][0]=original_position[0];      /*1å›åˆ°åˆå§‹ä½ç½®*/
 	
 	for(i=0;i<8;i++)
 	{
 		b_anticlockwise90[3][i]=b_anticlockwise90[2][i];
 	}
 	
-	b_anticlockwise90[3][4]=wrasp_position[0];         /*5Ç°½ø*/
+	b_anticlockwise90[3][4]=wrasp_position[0];         /*5å‰è¿›*/
 	
 }
 
 
 
 
-/*  º¯ÊıÃû£ºCalcul_Uclock180()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½ÉÏÃæĞı×ª180¶ÈµÄ¶æ»úÖ´ĞĞÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º³õÊ¼»¯º¯Êı
- *±¸    ×¢£ºÊı×é×î´ó±êºÅ19
+/*  å‡½æ•°åï¼šCalcul_Uclock180()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹ä¸Šé¢æ—‹è½¬180åº¦çš„èˆµæœºæ‰§è¡Œæ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šåˆå§‹åŒ–å‡½æ•°
+ *å¤‡    æ³¨ï¼šæ•°ç»„æœ€å¤§æ ‡å·19
  */
 void Calcul_Uclock180(void)
 {
    u8 i,j,k;
 	
-   /*´Ó³õÊ¼Î»ÖÃµ½ÏòÓÒµ¹Á¢µÄ¹ı³Ì*/
+   /*ä»åˆå§‹ä½ç½®åˆ°å‘å³å€’ç«‹çš„è¿‡ç¨‹*/
 	
 	for(j=0;j<=5;j++)
 	{
@@ -1047,7 +1080,7 @@ void Calcul_Uclock180(void)
 		
 	}
 	
-	/*Ö´ĞĞÁ½±éÓÒÃæË³Ê±ÕëÓÒ×ª*/
+	/*æ‰§è¡Œä¸¤éå³é¢é¡ºæ—¶é’ˆå³è½¬*/
 	
 	for(j=6,k=0;j<=9;j++,k++)
 	{
@@ -1067,7 +1100,7 @@ void Calcul_Uclock180(void)
 	
 	}
 	
-	/*´Ó·Åµ¹µ½Ö±Á¢µÄ¹ı³Ì*/   
+	/*ä»æ”¾å€’åˆ°ç›´ç«‹çš„è¿‡ç¨‹*/   
 	
 	for(j=10;j<=15;j++)
 	{
@@ -1081,18 +1114,18 @@ void Calcul_Uclock180(void)
 }
 
 
-/*  º¯ÊıÃû£ºCalcul_Dclock180()
- *º¯Êı¹¦ÄÜ£º¼ÆËãÄ§·½ÏÂÃæĞı×ª180¶ÈµÄ¶æ»úÖ´ĞĞÊı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *µ÷ÓÃÇé¿ö£º³õÊ¼»¯º¯Êı
- *±¸    ×¢£ºÊı×é×î´ó±êºÅ19
+/*  å‡½æ•°åï¼šCalcul_Dclock180()
+ *å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é­”æ–¹ä¸‹é¢æ—‹è½¬180åº¦çš„èˆµæœºæ‰§è¡Œæ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *è°ƒç”¨æƒ…å†µï¼šåˆå§‹åŒ–å‡½æ•°
+ *å¤‡    æ³¨ï¼šæ•°ç»„æœ€å¤§æ ‡å·19
  */
 void Calcul_Dclock180(void)
 {
 	 u8 i,j,k;
 	
-	/*´Ó³õÊ¹Î»ÖÃµ½Ïò×óµ¹Á¢µÄ¹ı³Ì*/
+	/*ä»åˆä½¿ä½ç½®åˆ°å‘å·¦å€’ç«‹çš„è¿‡ç¨‹*/
 		for(j=0;j<=5;j++)
 	{
 		for(i=0;i<8;i++)
@@ -1102,7 +1135,7 @@ void Calcul_Dclock180(void)
 	}
 	
 	
-  /*Ö´ĞĞÁ½±éÓÒÃæË³Ê±ÕëÓÒ×ª*/
+  /*æ‰§è¡Œä¸¤éå³é¢é¡ºæ—¶é’ˆå³è½¬*/
 	for(j=6,k=0;j<=9;j++,k++)
 	{
 		for(i=0;i<8;i++)
@@ -1121,7 +1154,7 @@ void Calcul_Dclock180(void)
 	
 	}
 	
-	/*´Ó·Åµ¹µ½Ö±Á¢µÄ¹ı³Ì*/   
+	/*ä»æ”¾å€’åˆ°ç›´ç«‹çš„è¿‡ç¨‹*/   
 
 	for(j=10;j<=15;j++)
 	{
@@ -1134,15 +1167,15 @@ void Calcul_Dclock180(void)
 
 }
 
-/*  º¯ÊıÃû£ºInit_TotalArray()
- *º¯Êı¹¦ÄÜ£º°ÑËùÓĞĞèÒªÔÚ³ÌĞòÖĞÒ»¿ªÊ¼¼ÆËãµÄº¯Êı·ÅÔÚ´Ëº¯ÊıÖĞ£¬ÒÔ³õÊ¼»¯Êı×é
- *Êä    Èë£ºÎŞ
- *Êä    ³ö£ºÎŞ
- *±¸    ×¢£º×¢Òâµ÷ÓÃº¯ÊıµÄË³Ğò,ÔËĞĞÍêĞèÒª530us
+/*  å‡½æ•°åï¼šInit_TotalArray()
+ *å‡½æ•°åŠŸèƒ½ï¼šæŠŠæ‰€æœ‰éœ€è¦åœ¨ç¨‹åºä¸­ä¸€å¼€å§‹è®¡ç®—çš„å‡½æ•°æ”¾åœ¨æ­¤å‡½æ•°ä¸­ï¼Œä»¥åˆå§‹åŒ–æ•°ç»„
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *å¤‡    æ³¨ï¼šæ³¨æ„è°ƒç”¨å‡½æ•°çš„é¡ºåº,è¿è¡Œå®Œéœ€è¦530us
  */
 void Init_TotalArray(void)
 {
-	Calcul_InitPosition(); /*´Ëº¯ÊıÊ×ÏÈ±»³õÊ¼»¯£¬ÒòÎªÉú³ÉµÄÊı×é»á±»ÒÔºóºÜ¶àº¯ÊıÓÃµ½*/
+	Calcul_InitPosition(); /*æ­¤å‡½æ•°é¦–å…ˆè¢«åˆå§‹åŒ–ï¼Œå› ä¸ºç”Ÿæˆçš„æ•°ç»„ä¼šè¢«ä»¥åå¾ˆå¤šå‡½æ•°ç”¨åˆ°*/
 	
 	Calcul_FirPicPosition();
   Calcul_SecPicPosition();
@@ -1168,12 +1201,32 @@ void Init_TotalArray(void)
   Calcul_Danticlockwise90();
 
   Calcul_Uclock180();
-  Calcul_Dclock180(); /*ºóÁù¸öº¯ÊıµÄË³Ğò²»Òª¶¯*/
+  Calcul_Dclock180(); /*åå…­ä¸ªå‡½æ•°çš„é¡ºåºä¸è¦åŠ¨*/
+	
+	Calcul_Double1();
+	Calcul_Double2();
+	Calcul_Double3();
+	Calcul_Double4();
+	Calcul_Double5();
+	Calcul_Double6();
+	Calcul_Double7();
+	Calcul_Double8();
+	Calcul_Double9();
+	Calcul_Double10();
+	Calcul_Double11();
+	Calcul_Double12();
+	Calcul_Double13();
+	Calcul_Double14();
+	Calcul_Double15();
+	Calcul_Double16();
+	Calcul_Double17();
+	Calcul_Double18();
+
 }
 
-/*  º¯ÊıÃû£ºInit_PWM()
- *º¯Êı¹¦ÄÜ£º
- *±¸    ×¢£º
+/*  å‡½æ•°åï¼šInit_PWM()
+ *å‡½æ•°åŠŸèƒ½ï¼š
+ *å¤‡    æ³¨ï¼š
  */
 void Init_PWM(void)
 {
@@ -1191,11 +1244,11 @@ void Init_PWM(void)
 }
 
 
-/*  º¯ÊıÃû£º SolvecubeArray_ToBufferArray()
- *º¯Êı¹¦ÄÜ£º °Ñ½âËãÄ§·½µÄ¾Ş´óÊı×é·Å½ø»º´æÊı×éu16 pos[500][8]ÖĞ
- *Êä    Èë£º ÎŞ
- *Êä    ³ö£º Êı×éĞĞ±ê
- *±¸    ×¢£º ÔÚ°ÑÏà¹ØÊı×é·ÅÈë»º´æÊı×éÊ±£¬Òª¹Øµô¶¨Ê±Æ÷£¬·ÀÖ¹²å²¹º¯ÊıÖĞ¸Ä±äÈ«¾Ö±äÁ¿lines_num
+/*  å‡½æ•°åï¼š SolvecubeArray_ToBufferArray()
+ *å‡½æ•°åŠŸèƒ½ï¼š æŠŠè§£ç®—é­”æ–¹çš„å·¨å¤§æ•°ç»„æ”¾è¿›ç¼“å­˜æ•°ç»„u16 pos[500][8]ä¸­
+ *è¾“    å…¥ï¼š æ— 
+ *è¾“    å‡ºï¼š æ•°ç»„è¡Œæ ‡
+ *å¤‡    æ³¨ï¼š åœ¨æŠŠç›¸å…³æ•°ç»„æ”¾å…¥ç¼“å­˜æ•°ç»„æ—¶ï¼Œè¦å…³æ‰å®šæ—¶å™¨ï¼Œé˜²æ­¢æ’è¡¥å‡½æ•°ä¸­æ”¹å˜å…¨å±€å˜é‡lines_num
  */
 void  SolvecubeArray_ToBufferArray(void)
 {
@@ -1218,14 +1271,586 @@ void  SolvecubeArray_ToBufferArray(void)
 		}
 	
 	}	
+	
+	
+//	/*æ¾å¼€æœºæ¢°æ‰‹ï¼Œæ–¹ä¾¿æ“ä½œè€…å–ä¸‹é­”æ–¹*/
+//		for(i=0;i<8;i++)
+//		{
+//			pos[lines_num][i]=initial_position[i];
+//		}
+//		
+//	/*5æŠ“ä½é­”æ–¹ï¼Œ6,7,8æ¾å¼€é­”æ–¹*/
+//		for(i=0;i<=2;i++)
+//		{
+//			pos[lines_num][i+5]=loosen_position[i+1];
+//		}
+//		
 		
 }	
 
-/*  º¯ÊıÃû£ºPicArray_ToBufferArray(u(*array)[8],line_num)
- *º¯Êı¹¦ÄÜ£º°ÑÅÄÕÕĞèÒªÖ´ĞĞµÄÊı×é·ÅÈë»º´æÊı×é£¬²¢·µ»ØĞèÒªÖ´ĞĞÊı×éµÄĞĞ±ê
- *Êä    Èë£º¶şÎ¬Êı×éÖ¸Õë(*array)[8]£¬Êı×éĞĞ±êline_num
- *Êä    ³ö£ºÊı×éĞĞ±ê
- *±¸    ×¢£ºÔÚ°ÑÏà¹ØÊı×é·ÅÈë»º´æÊı×éÊ±£¬Òª¹Øµô¶¨Ê±Æ÷£¬·ÀÖ¹²å²¹º¯ÊıÖĞ¸Ä±äÈ«¾Ö±äÁ¿lines_num
+//L R  1
+void Calcul_Double1(void)
+{
+				u8 i;
+				
+				for(i=0;i<8;i++)
+				{
+					double_movement1[0][i]=initial_position[i];
+				}
+				
+				double_movement1[0][1]=anticlockwise90_position[1]; /*2é€†æ—¶é’ˆ*/
+				double_movement1[0][3]=anticlockwise90_position[3]; /*4é€†æ—¶é’ˆ*/
+				
+				for(i=0;i<8;i++)
+				{
+					double_movement1[1][i]=double_movement1[0][i];
+				}
+				
+				double_movement1[1][5]=loosen_position[1]; /*6åé€€*/
+				double_movement1[1][7]=loosen_position[3]; /*8åé€€*/
+
+				for(i=0;i<8;i++)
+				{
+					double_movement1[2][i]=double_movement1[1][i];
+				}
+				
+				double_movement1[2][1]=original_position[1];/*2å›åˆ°åˆå§‹ä½ç½®*/
+				double_movement1[2][3]=original_position[3];/*4å›åˆ°åˆå§‹ä½ç½®*/
+
+				for(i=0;i<8;i++)
+				{
+					double_movement1[3][i]=double_movement1[2][i];
+				}
+				
+				double_movement1[3][5]=wrasp_position[1]; /*6å‰è¿›*/
+        double_movement1[3][7]=wrasp_position[3]; /*8å‰è¿›*/
+
+}
+
+
+//L R' 2
+void Calcul_Double2(void)
+{
+		u8 i;
+				
+				for(i=0;i<8;i++)
+				{
+					double_movement2[0][i]=initial_position[i];
+				}
+				
+				double_movement2[0][1]=anticlockwise90_position[1]; /*2é€†æ—¶é’ˆ*/
+        double_movement2[0][3]=clockwise90_position[3];     /*4é¡ºæ—¶é’ˆ*/
+				
+				for(i=0;i<8;i++)
+				{
+					double_movement2[1][i]=double_movement2[0][i];
+				}
+				
+				double_movement2[1][5]=loosen_position[1]; /*6åé€€*/
+        double_movement2[1][7]=loosen_position[3]; /*8åé€€*/
+
+				for(i=0;i<8;i++)
+				{
+					double_movement2[2][i]=double_movement2[1][i];
+				}
+				
+				double_movement2[2][1]=original_position[1];/*2å›åˆ°åˆå§‹ä½ç½®*/
+        double_movement2[2][3]=original_position[3];/*4å›åˆ°åˆå§‹ä½ç½®*/
+
+				for(i=0;i<8;i++)
+				{
+					double_movement2[3][i]=double_movement2[2][i];
+				}
+				
+				double_movement2[3][5]=wrasp_position[1]; /*6å‰è¿›*/
+        double_movement2[3][7]=wrasp_position[3]; /*8å‰è¿›*/
+
+}
+
+//L R2 3
+void Calcul_Double3(void)
+{			
+	u8 i,j;
+	
+	for(i=0;i<4;i++)
+	{
+			for(j=0;j<8;j++)
+			{
+				double_movement3[i][j]=double_movement1[i][j];
+			}
+	}
+		
+	for(i=0;i<4;i++)
+	{
+			for(j=0;j<8;j++)
+			{
+				double_movement3[i+4][j]=r_clockwise90[i][j];
+			}
+	}
+	
+}
+
+//L' R  4
+void Calcul_Double4(void)
+{
+				u8 i;
+			
+			for(i=0;i<8;i++)
+			{
+				double_movement4[0][i]=initial_position[i];
+			}
+			
+			double_movement4[0][1]=clockwise90_position[1];     /*2é¡ºæ—¶é’ˆ*/
+			double_movement4[0][3]=anticlockwise90_position[3]; /*4é€†æ—¶é’ˆ*/
+
+			for(i=0;i<8;i++)
+			{
+				double_movement4[1][i]=double_movement4[0][i];
+			}
+			
+			double_movement4[1][5]=loosen_position[1]; /*6åé€€*/
+			double_movement4[1][7]=loosen_position[3]; /*8åé€€*/
+			for(i=0;i<8;i++)
+			{
+				double_movement4[2][i]=double_movement4[1][i];
+			}
+			
+			double_movement4[2][1]=original_position[1];/*2å›åˆ°åˆå§‹ä½ç½®*/
+			double_movement4[2][3]=original_position[3];/*4å›åˆ°åˆå§‹ä½ç½®*/
+			for(i=0;i<8;i++)
+			{
+				double_movement4[3][i]=double_movement4[2][i];
+			}
+			
+			double_movement4[3][5]=wrasp_position[1]; /*6å‰è¿›*/
+			double_movement4[3][7]=wrasp_position[3]; /*8å‰è¿›*/
+
+
+}
+
+//L' R' 5
+void Calcul_Double5(void)
+{
+		
+			u8 i;
+	
+			for(i=0;i<8;i++)
+			{
+				double_movement5[0][i]=initial_position[i];
+			}
+			
+			double_movement5[0][1]=clockwise90_position[1];  /*2é¡ºæ—¶é’ˆ*/
+      double_movement5[0][3]=clockwise90_position[3];  /*4é¡ºæ—¶é’ˆ*/
+
+			for(i=0;i<8;i++)
+			{
+				double_movement5[1][i]=double_movement5[0][i];
+			}
+			
+			double_movement5[1][5]=loosen_position[1]; /*6åé€€*/
+      double_movement5[1][7]=loosen_position[3]; /*8åé€€*/
+			for(i=0;i<8;i++)
+			{
+				double_movement5[2][i]=double_movement5[1][i];
+			}
+			
+			double_movement5[2][1]=original_position[1];/*2å›åˆ°åˆå§‹ä½ç½®*/
+      double_movement5[2][3]=original_position[3];/*4å›åˆ°åˆå§‹ä½ç½®*/
+			for(i=0;i<8;i++)
+			{
+				double_movement5[3][i]=double_movement5[2][i];
+			}
+			
+			double_movement5[3][5]=wrasp_position[1]; /*6å‰è¿›*/
+      double_movement5[3][7]=wrasp_position[3]; /*8å‰è¿›*/
+
+}
+
+//L' R2 6
+void Calcul_Double6(void)
+{
+		u8 i,j;
+	
+	for(i=0;i<4;i++)
+	{
+			for(j=0;j<8;j++)
+			{
+				double_movement6[i][j]=double_movement4[i][j];
+			}
+	}
+		
+	for(i=0;i<4;i++)
+	{
+			for(j=0;j<8;j++)
+			{
+				double_movement6[i+4][j]=r_clockwise90[i][j];
+			}
+	}
+		
+			
+}
+
+//L2  R  7
+void Calcul_Double7(void)
+{
+			u8 i,j;
+	
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement7[i][j]=double_movement1[i][j];
+				}
+		}
+			
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement7[i+4][j]=l_clockwise90[i][j];
+				}
+		}
+
+	
+}
+//L2  R' 8
+void Calcul_Double8(void)
+{
+			u8 i,j;
+	
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement8[i][j]=double_movement2[i][j];
+				}
+		}
+			
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement8[i+4][j]=l_clockwise90[i][j];
+				}
+		}
+
+
+}
+
+//L2  R2 9
+void Calcul_Double9(void)
+{
+				u8 i,j;
+	
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement9[i][j]=double_movement1[i][j];
+				}
+		}
+		
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement9[i+4][j]=double_movement1[i][j];
+				}
+		}	
+
+}
+
+
+
+//F B   10
+void Calcul_Double10(void)
+{
+		 u8 i;
+	
+	for(i=0;i<8;i++)
+	{
+		double_movement10[0][i]=initial_position[i];
+	}
+	
+	double_movement10[0][2]=anticlockwise90_position[2];/*3é€†æ—¶é’ˆ*/
+	double_movement10[0][0]=anticlockwise90_position[0];/*1é€†æ—¶é’ˆ*/
+	
+	for(i=0;i<8;i++)
+	{
+		double_movement10[1][i]=double_movement10[0][i];
+	}
+	
+	double_movement10[1][6]=loosen_position[2]; /*7åé€€*/
+	double_movement10[1][4]=loosen_position[0]; /*5åé€€*/
+
+	
+	for(i=0;i<8;i++)
+	{
+		double_movement10[2][i]=double_movement10[1][i];
+	}
+	
+	double_movement10[2][2]=original_position[2];/*3å›åˆ°åˆå§‹ä½ç½®*/
+	double_movement10[2][0]=original_position[0];/*1å›åˆ°åˆå§‹ä½ç½®*/
+	
+	for(i=0;i<8;i++)
+	{
+		double_movement10[3][i]=double_movement10[2][i];
+	}
+	
+	double_movement10[3][6]=wrasp_position[2]; /*7å‰è¿›*/
+	double_movement10[3][4]=wrasp_position[0]; /*5å‰è¿›*/
+
+}
+//F B'  11
+
+void Calcul_Double11(void)
+{
+				 u8 i;
+	
+			for(i=0;i<8;i++)
+			{
+				double_movement11[0][i]=initial_position[i];
+			}
+			
+			double_movement11[0][2]=anticlockwise90_position[2];/*3é€†æ—¶é’ˆ*/
+      double_movement11[0][0]=clockwise90_position[0];    /*1é¡ºæ—¶é’ˆ*/
+			
+			for(i=0;i<8;i++)
+			{
+				double_movement11[1][i]=double_movement11[0][i];
+			}
+			
+			double_movement11[1][6]=loosen_position[2]; /*7åé€€*/
+      double_movement11[1][4]=loosen_position[0]; /*5åé€€*/
+
+			
+			for(i=0;i<8;i++)
+			{
+				double_movement11[2][i]=double_movement11[1][i];
+			}
+			
+			double_movement11[2][2]=original_position[2];/*3å›åˆ°åˆå§‹ä½ç½®*/
+			double_movement11[2][0]=original_position[0];/*1å›åˆ°åˆå§‹ä½ç½®*/
+			
+			for(i=0;i<8;i++)
+			{
+				double_movement11[3][i]=double_movement11[2][i];
+			}
+			
+			double_movement11[3][6]=wrasp_position[2]; /*7å‰è¿›*/
+			double_movement11[3][4]=wrasp_position[0]; /*5å‰è¿›*/
+
+}
+
+//F B2  12
+void Calcul_Double12(void)
+{
+		u8 i,j;	
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement12[i][j]=double_movement10[i][j];
+				}
+		}
+		
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement12[i+4][j]=b_clockwise90[i][j];
+				}
+		}	
+
+
+}
+
+
+//F'  B   13
+void Calcul_Double13(void)
+{
+			u8 i;
+	
+			for(i=0;i<8;i++)
+			{
+				double_movement13[0][i]=initial_position[i];
+			}
+			
+			double_movement13[0][2]=clockwise90_position[2];    /*3é¡ºæ—¶é’ˆ*/
+			double_movement13[0][0]=anticlockwise90_position[0];/*1é€†æ—¶é’ˆ*/
+
+			
+			for(i=0;i<8;i++)
+			{
+				double_movement13[1][i]=double_movement13[0][i];
+			}
+			
+			double_movement13[1][6]=loosen_position[2]; /*7åé€€*/
+			double_movement13[1][4]=loosen_position[0]; /*5åé€€*/
+
+			
+			for(i=0;i<8;i++)
+			{
+				double_movement13[2][i]=double_movement13[1][i];
+			}
+			
+			double_movement13[2][2]=original_position[2];/*3å›åˆ°åˆå§‹ä½ç½®*/
+			double_movement13[2][0]=original_position[0];/*1å›åˆ°åˆå§‹ä½ç½®*/
+
+			for(i=0;i<8;i++)
+			{
+				double_movement13[3][i]=double_movement13[2][i];
+			}
+			
+			double_movement13[3][6]=wrasp_position[2]; /*7å‰è¿›*/
+			double_movement13[3][4]=wrasp_position[0]; /*5å‰è¿›*/
+
+}
+
+
+//F'  B'  14
+void Calcul_Double14(void)
+{
+			u8 i;
+	
+			for(i=0;i<8;i++)
+			{
+				double_movement14[0][i]=initial_position[i];
+			}
+			
+			double_movement14[0][2]=clockwise90_position[2];    /*3é¡ºæ—¶é’ˆ*/
+      double_movement14[0][0]=clockwise90_position[0];    /*1é¡ºæ—¶é’ˆ*/
+
+			
+			for(i=0;i<8;i++)
+			{
+				double_movement14[1][i]=double_movement14[0][i];
+			}
+			
+			double_movement14[1][6]=loosen_position[2]; /*7åé€€*/
+			double_movement14[1][4]=loosen_position[0]; /*5åé€€*/
+
+			
+			for(i=0;i<8;i++)
+			{
+				double_movement14[2][i]=double_movement14[1][i];
+			}
+			
+			double_movement14[2][2]=original_position[2];/*3å›åˆ°åˆå§‹ä½ç½®*/
+			double_movement14[2][0]=original_position[0];/*1å›åˆ°åˆå§‹ä½ç½®*/
+
+			for(i=0;i<8;i++)
+			{
+				double_movement14[3][i]=double_movement14[2][i];
+			}
+			
+			double_movement14[3][6]=wrasp_position[2]; /*7å‰è¿›*/
+			double_movement14[3][4]=wrasp_position[0]; /*5å‰è¿›*/
+
+
+}
+
+//F'  B2  15
+void Calcul_Double15(void)
+{
+		u8 i,j;	
+	
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement15[i][j]=double_movement13[i][j];
+				}
+		}
+		
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement15[i+4][j]=b_clockwise90[i][j];
+				}
+		}	
+
+
+}
+//F2  B   16
+void Calcul_Double16(void)
+{
+			u8 i,j;	
+	
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement16[i][j]=double_movement10[i][j];
+				}
+		}
+		
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement16[i+4][j]=f_clockwise90[i][j];
+				}
+		}	
+
+
+}
+//F2  B'  17
+void Calcul_Double17(void)
+{
+	
+		u8 i,j;	
+	
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement17[i][j]=double_movement11[i][j];
+				}
+		}
+		
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement17[i+4][j]=f_clockwise90[i][j];
+				}
+		}	
+
+}
+
+//F2  B2  18
+void Calcul_Double18(void)
+{
+	
+			u8 i,j;	
+	
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement18[i][j]=double_movement10[i][j];
+				}
+		}
+		
+		for(i=0;i<4;i++)
+		{
+				for(j=0;j<8;j++)
+				{
+					double_movement18[i+4][j]=double_movement10[i][j];
+				}
+		}	
+
+}
+
+
+
+/*  å‡½æ•°åï¼šPicArray_ToBufferArray(u(*array)[8],line_num)
+ *å‡½æ•°åŠŸèƒ½ï¼šæŠŠæ‹ç…§éœ€è¦æ‰§è¡Œçš„æ•°ç»„æ”¾å…¥ç¼“å­˜æ•°ç»„ï¼Œå¹¶è¿”å›éœ€è¦æ‰§è¡Œæ•°ç»„çš„è¡Œæ ‡
+ *è¾“    å…¥ï¼šäºŒç»´æ•°ç»„æŒ‡é’ˆ(*array)[8]ï¼Œæ•°ç»„è¡Œæ ‡line_num
+ *è¾“    å‡ºï¼šæ•°ç»„è¡Œæ ‡
+ *å¤‡    æ³¨ï¼šåœ¨æŠŠç›¸å…³æ•°ç»„æ”¾å…¥ç¼“å­˜æ•°ç»„æ—¶ï¼Œè¦å…³æ‰å®šæ—¶å™¨ï¼Œé˜²æ­¢æ’è¡¥å‡½æ•°ä¸­æ”¹å˜å…¨å±€å˜é‡lines_num
  */
 void PicArray_ToBufferArray(u16 (*array)[8],u16 arrayline_num)
 {
@@ -1251,11 +1876,35 @@ void PicArray_ToBufferArray(u16 (*array)[8],u16 arrayline_num)
 	
 }
 
-/*
- *
- */
-void Init_Pwm(void)
-{
 
+/*  å‡½æ•°åï¼šInit_MotorMovement()
+ *å‡½æ•°åŠŸèƒ½ï¼š5,6,7,8æ¾å¼€é­”æ–¹ï¼Œå¥½è®©æ“ä½œè€…æŠŠé­”æ–¹æ”¾å…¥æœºæ¢°æ‰‹ä¸­
+ *è¾“    å…¥ï¼šæ— 
+ *è¾“    å‡ºï¼šæ— 
+ *å¤‡    æ³¨ï¼š
+ */
+void Init_MotorMovement(void)
+{
+	u8 i;
 	
-}	
+	for(i=0;i<8;i++)
+		{
+		
+			pos[0][i]=initial_position[i];/*åˆå§‹ä½ç½®*/
+		}
+		
+	for(i=0;i<4;i++)
+		{
+		
+			pos[1][i]=initial_position[i];
+		}
+		
+	for(i=0;i<4;i++)
+		{
+		
+			pos[1][i+4]=loosen_position[i];/*5,6,7,8æ¾å¼€é­”æ–¹ï¼Œå¥½è®©æ“ä½œè€…æŠŠé­”æ–¹æ”¾å…¥æœºæ¢°æ‰‹ä¸­*/
+		}
+		
+		lines_num=1;
+	}
+

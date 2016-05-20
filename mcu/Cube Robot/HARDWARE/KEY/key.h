@@ -1,10 +1,10 @@
-#ifndef __KEY_H
+ï»¿#ifndef __KEY_H
 #define __KEY_H	 
 #include "sys.h"
  
-#define KEY0  GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_4)/*¶ÁÈ¡°´¼ü0*/
-#define KEY1  GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_3)/*¶ÁÈ¡°´¼ü1*/
-#define KEY2  GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_2)/*¶ÁÈ¡°´¼ü2*/
+#define KEY0  GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_4)/*è¯»å–æŒ‰é”®0*/
+#define KEY1  GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_3)/*è¯»å–æŒ‰é”®1*/
+#define KEY2  GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_2)/*è¯»å–æŒ‰é”®2*/
 
 void KEY_Init(void);
 #endif

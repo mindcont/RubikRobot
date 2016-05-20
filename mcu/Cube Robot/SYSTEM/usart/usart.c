@@ -1,10 +1,10 @@
-#include "usart.h"
+ï»¿#include "usart.h"
 
-u8 uart_rdata=0;         /*Í¨¹ý´®¿Ú·¢À´µÄµ¥×Ö·û*/
-u8 rece_flag=0;          /*´®¿Ú½ÓÊÕ±êÖ¾Î»*/
-u8 rece_string[50]="#U!";      /*´æ·Å½ÓÊÕµ½µÄ×Ö·û´®*/
+u8 uart_rdata=0;               /*é€šè¿‡ä¸²å£å‘æ¥çš„å•å­—ç¬¦*/
+u8 rece_flag=0;                /*ä¸²å£æŽ¥æ”¶æ ‡å¿—ä½*/
+u8 rece_string[50]="#U!";      /*å­˜æ”¾æŽ¥æ”¶åˆ°çš„å­—ç¬¦ä¸²*/
 
-  /*USART1³õÊ¼»¯*/
+  /*USART1åˆå§‹åŒ–*/
 void USART1_Config(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -38,7 +38,7 @@ void USART1_Config(void)
 	
 }
 
-/*Êý×Ö×ªASCÂëº¯Êý*/
+/*æ•°å­—è½¬ASCç å‡½æ•°*/
 u8 asc_to_num(u8 asc)				
 {	
 	u8 num;
@@ -58,7 +58,7 @@ u8 asc_to_num(u8 asc)
 	return num;
 }
 
-/*Í¨¹ý´®¿Ú½«charÐÍÊý¾Ý×ª»»ÎªASCÂë·¢ËÍ³öÈ¥*/
+/*é€šè¿‡ä¸²å£å°†charåž‹æ•°æ®è½¬æ¢ä¸ºASCç å‘é€å‡ºåŽ»*/
 void USART_SendChar8(u8 num)
 {
      u8 bai,shi,ge;
@@ -97,7 +97,7 @@ void USART_SendChar8(u8 num)
 
 }
 
-/*Í¨¹ý´®¿Ú½«intÐÍÊý¾Ý×ª»»ÎªASCÂë·¢ËÍ³öÈ¥*/
+/*é€šè¿‡ä¸²å£å°†intåž‹æ•°æ®è½¬æ¢ä¸ºASCç å‘é€å‡ºåŽ»*/
 void USART_SendInt16(u16 num)
 {
      u8 wan,qian,bai,shi,ge;
@@ -160,7 +160,7 @@ void USART_SendInt16(u16 num)
 
 
 
-  /* ·¢ËÍ×Ö·û´®*/
+  /* å‘é€å­—ç¬¦ä¸²*/
 void USART_SendString (unsigned char *str)
 {
 	
@@ -175,17 +175,17 @@ void USART_SendString (unsigned char *str)
 }
 
 
- /* Í¨¹ý´®¿Ú·¢ËÍµ¥¸ö×Ö·û*/
+ /* é€šè¿‡ä¸²å£å‘é€å•ä¸ªå­—ç¬¦*/
 void USART_SendChar(u8 siglechar)
 {
    USART_SendData (USART1,siglechar);
-   while(USART_GetFlagStatus (USART1,USART_FLAG_TC)!=SET);	 //µÈ´ý·¢ËÍÍê³É
+   while(USART_GetFlagStatus (USART1,USART_FLAG_TC)!=SET);	 //ç­‰å¾…å‘é€å®Œæˆ
    USART_ClearFlag (USART1,USART_FLAG_TC);
 }
 
 /*
- *º¯Êý¹¦ÄÜ£ºUSART1ÖÐ¶ÏÓÅÏÈ¼¶ÉèÖÃ
- *±¸    ×¢£º¾­¹ý²âÊÔ£¬²»ÉèÖÃUSART1ÖÐ¶ÏÓÅÏÈ¼¶£¬ÎÞ·¨Ê¹ÓÃÖÐ¶Ï
+ *å‡½æ•°åŠŸèƒ½ï¼šUSART1ä¸­æ–­ä¼˜å…ˆçº§è®¾ç½®
+ *å¤‡    æ³¨ï¼šç»è¿‡æµ‹è¯•ï¼Œä¸è®¾ç½®USART1ä¸­æ–­ä¼˜å…ˆçº§ï¼Œæ— æ³•ä½¿ç”¨ä¸­æ–­
  */
 void NVIC_USART1_Configuration(void)
 {
@@ -200,7 +200,7 @@ void NVIC_USART1_Configuration(void)
 }
 
 
-/*´®¿Ú1ÖÐ¶Ï·þÎñ³ÌÐò*/
+/*ä¸²å£1ä¸­æ–­æœåŠ¡ç¨‹åº*/
 //void USART1_IRQHandler(void)
 //{
 //	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)  /*Receive Data register not empty interrupt*/
@@ -220,9 +220,9 @@ void USART1_IRQHandler(void)
 	{ 	
 		 rece_string[i++]=USART1->DR;
 		
-		if(((rece_string[i-1]=='!')&&(rece_string[0]=='#'))||(('A'<=rece_string[0])&&(rece_string[0]<='Z')))  /*'!'Îª×Ö·û´®½áÊø±êÖ¾Î»*/
+		if((rece_string[i-1]=='!')&&(rece_string[0]=='#'))  /*'!'ä¸ºå­—ç¬¦ä¸²ç»“æŸæ ‡å¿—ä½*/
 		{	
-			i=0;          /*ÎðÍüÇåÁã*/
+			i=0;          /*å‹¿å¿˜æ¸…é›¶*/
 			rece_flag=1;
 		  USART_ClearFlag (USART1,USART_IT_RXNE);	           /*clear Receive data register not empty flag*/
 		}

@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'Rube Robot' 
- * Target:  'mcu' 
+ * Target:  'Target 1' 
  */
 
 #ifndef RTE_COMPONENTS_H

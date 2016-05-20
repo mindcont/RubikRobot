@@ -1,16 +1,16 @@
-#include "key.h"
+ï»¿#include "key.h"
 #include "sys.h" 
 #include "delay.h"
 
 								    
-/*°´¼ü³õÊ¼»¯º¯Êı*/
+/*æŒ‰é”®åˆå§‹åŒ–å‡½æ•°*/
 void KEY_Init(void) 
 { 
  	GPIO_InitTypeDef GPIO_InitStructure;
  	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE,ENABLE);
 
-	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_2;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; /*ÉèÖÃ³ÉÉÏÀ­ÊäÈë*/
+	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_2|GPIO_Pin_3|GPIO_Pin_4;/*Pin_4ç”¨æ¥åˆå§‹åŒ–èˆµæœºçš„ä½ç½®ï¼ŒPin_2ç”¨æ¥æŠŠèˆµæœºè½¬åˆ°æ‹ç…§çš„ç¬¬ä¸€ä¸ªä½ç½®*/
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; /*è®¾ç½®æˆä¸Šæ‹‰è¾“å…¥*/
  	GPIO_Init(GPIOE, &GPIO_InitStructure);
 }
 

@@ -1,0 +1,706 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/Cube_Preview"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+
+    <TableLayout
+        android:id="@+id/up_fecelet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center"
+        android:layout_toEndOf="@+id/front_facelet"
+        android:background="#000000">
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip"
+            android:layout_marginTop="1.0dip">
+
+            <View
+                android:id="@+id/U1"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 1" />
+
+            <View
+                android:id="@+id/U2"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 2" />
+
+            <View
+                android:id="@+id/U3"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/U4"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 1" />
+
+            <View
+                android:id="@+id/U5"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray" />
+
+            <View
+                android:id="@+id/U6"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/U7"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 1" />
+
+            <View
+                android:id="@+id/U8"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 2" />
+
+            <View
+                android:id="@+id/U9"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 3" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/left_facelet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/up_fecelet"
+        android:layout_gravity="center"
+        android:background="#000000">
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip"
+            android:layout_marginTop="1.0dip">
+
+            <View
+                android:id="@+id/L1"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 1" />
+
+            <View
+                android:id="@+id/L2"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 2" />
+
+            <View
+                android:id="@+id/L3"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/L4"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 1" />
+
+            <View
+                android:id="@+id/L5"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray" />
+
+            <View
+                android:id="@+id/L6"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/L7"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 1" />
+
+            <View
+                android:id="@+id/L8"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 2" />
+
+            <View
+                android:id="@+id/L9"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 3" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/front_facelet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/up_fecelet"
+        android:layout_gravity="center"
+        android:layout_toEndOf="@+id/left_facelet"
+        android:background="#000000">
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip"
+            android:layout_marginTop="1.0dip">
+
+            <View
+                android:id="@+id/F1"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 1" />
+
+            <View
+                android:id="@+id/F2"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 2" />
+
+            <View
+                android:id="@+id/F3"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/F4"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 1" />
+
+            <View
+                android:id="@+id/F5"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray" />
+
+            <View
+                android:id="@+id/F6"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/F7"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 1" />
+
+            <View
+                android:id="@+id/F8"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 2" />
+
+            <View
+                android:id="@+id/F9"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 3" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/right_facelet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/up_fecelet"
+        android:layout_gravity="center"
+        android:layout_toEndOf="@+id/front_facelet"
+        android:background="#000000">
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip"
+            android:layout_marginTop="1.0dip">
+
+            <View
+                android:id="@+id/R1"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 1" />
+
+            <View
+                android:id="@+id/R2"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 2" />
+
+            <View
+                android:id="@+id/R3"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/R4"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 1" />
+
+            <View
+                android:id="@+id/R5"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray" />
+
+            <View
+                android:id="@+id/R6"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/R7"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 1" />
+
+            <View
+                android:id="@+id/R8"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 2" />
+
+            <View
+                android:id="@+id/R9"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 3" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/back_facelet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/right_facelet"
+        android:layout_gravity="center"
+        android:layout_toEndOf="@+id/right_facelet"
+        android:background="#000000">
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip"
+            android:layout_marginTop="1.0dip">
+
+            <View
+                android:id="@+id/B1"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 1" />
+
+            <View
+                android:id="@+id/B2"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 2" />
+
+            <View
+                android:id="@+id/B3"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/B4"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 1" />
+
+            <View
+                android:id="@+id/B5"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray" />
+
+            <View
+                android:id="@+id/B6"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/B7"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 1" />
+
+            <View
+                android:id="@+id/B8"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 2" />
+
+            <View
+                android:id="@+id/B9"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 3" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/down_facelet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/right_facelet"
+        android:layout_gravity="center"
+        android:layout_toEndOf="@+id/front_facelet"
+        android:background="#000000">
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip"
+            android:layout_marginTop="1.0dip">
+
+            <View
+                android:id="@+id/D1"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 1" />
+
+            <View
+                android:id="@+id/D2"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 2" />
+
+            <View
+                android:id="@+id/D3"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="1 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/D4"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 1" />
+
+            <View
+                android:id="@+id/D5"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray" />
+
+            <View
+                android:id="@+id/D6"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="2 3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="1.0dip"
+            android:layout_marginRight="1.0dip">
+
+            <View
+                android:id="@+id/D7"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="1"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 1" />
+
+            <View
+                android:id="@+id/D8"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="2"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 2" />
+
+            <View
+                android:id="@+id/D9"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:layout_column="3"
+                android:layout_margin="1.0dip"
+                android:background="@color/gray"
+                android:onClick="setTileColor"
+                android:tag="3 3" />
+        </TableRow>
+    </TableLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/cube" />
+
+</RelativeLayout>

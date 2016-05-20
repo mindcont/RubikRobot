@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.dreamwalker.rubikrobot"
+    android:versionCode="2"
+    android:versionName="1.0">
+
+    <!--摄像头权限-->
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.hardware.camera.autofocus" />
+
+    <!-- 蓝牙权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+
+    <!-- 在SDCard中创建与删除文件权限 -->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+
+    <application
+        android:icon="@drawable/logo"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Holo.Light">
+
+        <activity
+            android:name="com.dreamwalker.rubikrobot.ui.WelcomeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.dreamwalker.rubikrobot.MainActivity"
+            android:screenOrientation="portrait"></activity>
+
+        <activity
+            android:name="com.dreamwalker.rubikrobot.ui.WelcomeGuideActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"></activity>
+
+        <activity
+            android:name="com.dreamwalker.rubikrobot.bluetooth.DeviceListActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/select_device"
+            android:screenOrientation="portrait"></activity>
+
+        <activity
+            android:name="com.dreamwalker.rubikrobot.ui.CubePreview"
+            android:label="@string/cube_preview"
+            android:screenOrientation="portrait"></activity>
+
+        <activity
+            android:name="com.dreamwalker.rubikrobot.ui.AboutActivity"
+            android:icon="@drawable/logo"
+            android:label="@string/aboutus"
+            android:screenOrientation="portrait"></activity>
+
+    </application>
+
+</manifest>

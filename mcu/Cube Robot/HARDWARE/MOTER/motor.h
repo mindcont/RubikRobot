@@ -15,6 +15,7 @@
 
 extern u16 pwm[8];
 extern u16 pos[500][8];
+extern u16 motor_speed;
 
 void change(void);
 void vpwm(void);

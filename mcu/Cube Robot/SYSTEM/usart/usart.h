@@ -1,11 +1,11 @@
-#ifndef __USART__H__
+ï»¿#ifndef __USART__H__
 #define __USART__H__
 
 #include "stm32f10x.h"
 
 extern u8 rece_flag;
-extern u8 uart_rdata;           /*Í¨¹ı´®¿Ú·¢À´µÄ×Ö·û*/
-extern u8 rece_string[50];      /*´æ·Å½ÓÊÕµ½µÄ×Ö·û´®*/
+extern u8 uart_rdata;           /*é€šè¿‡ä¸²å£å‘æ¥çš„å­—ç¬¦*/
+extern u8 rece_string[50];      /*å­˜æ”¾æ¥æ”¶åˆ°çš„å­—ç¬¦ä¸²*/
 
 
 

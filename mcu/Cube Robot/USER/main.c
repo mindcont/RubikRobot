@@ -1,7 +1,8 @@
-/*³ÌĞòÃèÊö£ºÄ§·½»úÆ÷ÈËÏÂÎ»»ú¿ØÖÆ³ÌĞò
- *Ö÷¿ØĞ¾Æ¬£ºSTM32F103ZET6,flash:512kb, ram:64kb
- *±¸    ×¢£ºMG995¶æ»ú¶ÈÊıÔö´óµÄ·½ÏòÎªÄæÊ±Õë
- *µ±ËÙ¶ÈÖµÎª500Ê±£¬½âËãÊ¾ÀıÎª#B'R2U2B2DU2F2UB2R2U'L2U'L'U'FRB2RD'!£¬ÔËĞĞÊ±¼äÎª2·Ö14Ãë£¬µ±ËÙ¶ÈÖµÎª300Ê±£¬ÔËĞĞÊ±¼äÎª1·Ö20Ãë         
+ï»¿/*ç¨‹åºæè¿°ï¼šé­”æ–¹æœºå™¨äººä¸‹ä½æœºæ§åˆ¶ç¨‹åº
+ *ä¸»æ§èŠ¯ç‰‡ï¼šSTM32F103ZET6,flash:512kb, ram:64kb
+ *è½¯ä»¶å¹³å°ï¼šKEIL5
+ *å¤‡    æ³¨ï¼šMG995èˆµæœºåº¦æ•°å¢å¤§çš„æ–¹å‘ä¸ºé€†æ—¶é’ˆ
+ *     
  */
 #include "stm32f10x.h"
 #include "led.h"
@@ -18,80 +19,39 @@
  int main(void)
  {	
 		delay_init();
-		NVIC_Configuration();        /*ÉèÖÃNVICÖĞ¶Ï·Ö×é2:2Î»ÇÀÕ¼ÓÅÏÈ¼¶£¬2Î»ÏìÓ¦ÓÅÏÈ¼¶*/
+		NVIC_Configuration();        /*è®¾ç½®NVICä¸­æ–­åˆ†ç»„2:2ä½æŠ¢å ä¼˜å…ˆçº§ï¼Œ2ä½å“åº”ä¼˜å…ˆçº§*/
 		LED_Init();
-		MotorPin_Init();             /*¶æ»ú³õÊ¼»¯ĞÅºÅÏßÒı½Å*/		     
+		MotorPin_Init();             /*èˆµæœºåˆå§‹åŒ–ä¿¡å·çº¿å¼•è„š*/		     
 		USART1_Config();
-		Init_TotalArray();           /*¼ÆËãÖ´ĞĞÊı×é*/
-	  Exti2_Init();
-    TIM3_Int_Init(10,71);	 
-		TIM_Cmd(TIM3, DISABLE);     /*½ÓÊÕµ½Ö¸ÁîÖ®ºó£¬ÔÙ´ò¿ªTIM3*/		
-	  while(!rece_flag);
+		Init_TotalArray();           /*è®¡ç®—æ‰§è¡Œæ•°ç»„*/
+	  Exti_Init();
+    TIM3_Int_Init(100,100);	 
+	  TIM4_Int_Init(10000,7199);   /*å®šæ—¶1S*/
+		//TIM_Cmd(TIM3, DISABLE);                        /*æ¥æ”¶åˆ°æŒ‡ä»¤ä¹‹åï¼Œå†æ‰“å¼€TIM3*/		
+	  //while(!rece_flag);
 	 
 		while(1)
-		{                                        /*¾¯¸æ£ºÍâ²¿ÖĞ¶ÏABCDEFµÄË³Ğò²»Òªµßµ¹*/
+		{                                               /*è­¦å‘Šï¼šå¤–éƒ¨ä¸­æ–­ABCDEFçš„é¡ºåºä¸è¦é¢ å€’*/
 						
 				if(rece_flag==1)
 					{
 						
-						  TIM_Cmd(TIM3, DISABLE);         /*ÏÈ¹Ø±ÕTIM3£¬±ÜÃâÈ«¾Ö±äÁ¿±»ĞŞ¸Ä*/	
-						  switch(rece_string[0])
+						  if(rece_string[0]=='#')
 							{
-									case 'Z':/*Íâ²¿ÖĞ¶Ïµ½À´£¬×ªµ½µÚÒ»¸öĞèÒªÅÄÕÕµÄÃæ*/
-									{
-										PicArray_ToBufferArray(firpic_position,2);
-									}break;
-									case 'A':/*´®¿ÚÖĞ¶Ïµ½À´£¬×ªµ½µÚ¶ş¸öÅÄÕÕµÄÃæ*/
-									{
-										PicArray_ToBufferArray(secpic_position,0);
-									}break;
-									case 'B':/*´®¿ÚÖĞ¶Ïµ½À´£¬×ªµ½µÚÈı¸öÅÄÕÕµÄÃæ*/
-									{
-										PicArray_ToBufferArray(thirpic_position,2);
-										
-									}break;
-									
-									case 'C':/*´®¿ÚÖĞ¶Ïµ½À´£¬×ªµ½µÚËÄ¸öÅÄÕÕµÄÃæ*/
-									{
-										PicArray_ToBufferArray(fourpic_position,0);
-										
-									}break;
-									case 'D':/*´®¿ÚÖĞ¶Ïµ½À´£¬×ªµ½µÚÎå¸öÅÄÕÕµÄÃæ*/
-									{
-										PicArray_ToBufferArray(fifpic_position,3);
-										
-									}break;
-									
-									case 'E':/*´®¿ÚÖĞ¶Ïµ½À´£¬×ªµ½µÚÁù¸öÅÄÕÕµÄÃæ*/
-									{
-										PicArray_ToBufferArray(sixpic_position,0);
-										
-									}break;
-									case 'F':/*´®¿ÚÖĞ¶Ïµ½À´£¬ÅÄÕÕÍêÖ®ºó»Øµ½³õÊ¼Î»ÖÃ£¬µÈ´ı½âËã*/
-									{
-										PicArray_ToBufferArray(retuinit_position,4);
-										
-									}break;
-									case'#':/*Ö´ĞĞ½âËãÄ§·½*/
-									{
+							      TIM_Cmd(TIM3, DISABLE);         /*å…ˆå…³é—­TIM3ï¼Œé¿å…å…¨å±€å˜é‡è¢«ä¿®æ”¹*/	
+										motor_speed=250;
 										SolvecubeArray_ToBufferArray();
-									}break;
-									default:
-									{
-									
-							    }break;
-
 							}
 					
 				    change();		
-						TIM_Cmd(TIM3, ENABLE);     /*½ÓÊÕµ½Ö¸ÁîÖ®ºó£¬ÔÙ´ò¿ªTIM3*/					 			
+						TIM_Cmd(TIM3, ENABLE);     /*æ¥æ”¶åˆ°æŒ‡ä»¤ä¹‹åï¼Œå†æ‰“å¼€TIM3*/					 			
 						rece_flag=0;
 					
 					}
 					
-				if (flag_vpwm==1)	  
+				if(flag_vpwm==1)	  
 					{
-						vpwm();				             /*²å²¹½Ç¶È*/
+						vpwm();				             /*æ’è¡¥è§’åº¦*/
 						flag_vpwm=0;
 					}	
 					
