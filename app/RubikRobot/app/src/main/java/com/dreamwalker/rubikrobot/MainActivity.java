@@ -22,12 +22,14 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
-import android.hardware.camera2.*;
 
 import android.os.Bundle;
 import android.os.Environment;
@@ -53,9 +55,12 @@ import com.dreamwalker.rubikrobot.camera.ColorRecognition;
 import com.dreamwalker.rubikrobot.solver.RubikRobot;
 import com.dreamwalker.rubikrobot.ui.AboutActivity;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+
 
 /**
  * This is the main Activity that displays the current chat session.
@@ -87,7 +92,7 @@ public class MainActivity extends Activity {
     int lineWidth = 100;
     //ColorRecognition
     ColorRecognition colorRecognition = new ColorRecognition();
-    private Camera camera;
+    private Camera mCamera;
     private SurfaceView cameraSurface;
     private SurfaceView locateSurface;
     //预览界面和硬件平台的标定位置以及线粗
@@ -129,7 +134,22 @@ public class MainActivity extends Activity {
                     // construct a string from the valid bytes in the buffer
                     readMessage = new String(readBuf, 0, msg.arg1);
                     Toast.makeText(MainActivity.this, "蓝牙接收到字符串" + readMessage, Toast.LENGTH_SHORT).show();
-                    camera.takePicture(null, null, new MyPictureCallback());
+
+
+                    try{
+                        mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                            @Override
+                            public void onAutoFocus(boolean b, Camera camera) {
+                                mCamera.takePicture(null, null, new MyPictureCallback());
+                            }
+                        });
+
+
+
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                    
                     //Toast.makeText(MainActivity.this, "蓝牙接收到字符串" + readMessage, Toast.LENGTH_SHORT).show();
                     //sendMessages(search.solution(colorRecognition.Get_RubikTotalColor(), 21, 100, 0, 0));
                 }
@@ -180,13 +200,13 @@ public class MainActivity extends Activity {
                 degree = 90;
                 break;
             case Surface.ROTATION_90:
-                degree = 0;
+                degree = 180;
                 break;
             case Surface.ROTATION_180:
-                degree = 0;
+                degree = 270;
                 break;
             case Surface.ROTATION_270:
-                degree = 270;
+                degree = 0;
                 break;
         }
         return degree;
@@ -237,7 +257,15 @@ public class MainActivity extends Activity {
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            camera.takePicture(null, null, new MyPictureCallback());
+
+//              mCamera.autoFocus(Camera.Parameters.FOCUS_MODE_AUTO);
+            mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                @Override
+                public void onAutoFocus(boolean b, Camera camera) {
+                    mCamera.takePicture(null, null, new MyPictureCallback());
+                }
+            });
+
             }
         };
 
@@ -304,6 +332,7 @@ public class MainActivity extends Activity {
         if (mChatService != null) mChatService.stop();
         if (Debug) Log.e(TAG, "-- ON DESTROY --");
     }
+
 
     private void ensureDiscoverable() {
         if (Debug) Log.d(TAG, "ensure discoverable");
@@ -466,10 +495,47 @@ public class MainActivity extends Activity {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+            Bitmap bMap;
+
             try {
                 bundle = new Bundle();
                 bundle.putByteArray("bytes", data);
-                saveToSDCard(data);
+
+                bMap = BitmapFactory.decodeByteArray(data,0,data.length);
+                Bitmap bMapRotate;
+
+                Matrix matrix = new Matrix();
+                matrix.reset();
+                matrix.postRotate(90);
+                bMapRotate = Bitmap.createBitmap(bMap, 0, 0, bMap.getWidth(),
+                        bMap.getHeight(), matrix, true);
+                bMap = bMapRotate;
+
+                //保存图片
+                try {
+
+                    File fileFolder = new File(Environment.getExternalStorageDirectory()
+                        + "/RubikRobot/");
+                    if (!fileFolder.exists()) {
+                        fileFolder.mkdir();
+                    }
+
+                    // Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    File jpgFile = new File(fileFolder, String.valueOf(++camera_timer) + ".jpg");
+                    BufferedOutputStream bos =
+                            new BufferedOutputStream(new FileOutputStream(jpgFile));
+
+                    bMap.compress(Bitmap.CompressFormat.JPEG, 100, bos);//将图片压缩到流中
+
+                    bos.flush();//输出
+                    bos.close();//关闭
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+
+//                saveToSDCard(data);
                 // Toast.makeText(getApplicationContext(), R.string.success,Toast.LENGTH_SHORT).show();
 
                 camera.startPreview();
@@ -503,6 +569,7 @@ public class MainActivity extends Activity {
 
         public void surfaceCreated(SurfaceHolder holder) {
             int id = getSurfaceId(holder);
+
             if (id < 0) {
                 Log.w(TAG, "surfaceCreated UNKNOWN holder=" + holder);
             } else {
@@ -510,10 +577,10 @@ public class MainActivity extends Activity {
             }
 
             try {
-                camera = Camera.open();
-                camera.setPreviewDisplay(holder);
-                camera.setDisplayOrientation(getPreviewDegree(MainActivity.this));
-                camera.startPreview();
+                mCamera = Camera.open();
+                mCamera.setPreviewDisplay(holder);
+//                mCamera.setDisplayOrientation(getPreviewDegree(MainActivity.this));
+//                mCamera.startPreview();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -523,18 +590,33 @@ public class MainActivity extends Activity {
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width,
                                    int height) {
+            //设置参数并开始预览
+            Log.d("surfaceChanged", "--------------surfaceChanged------------------");
+
             int id = getSurfaceId(holder);
             Surface surface = holder.getSurface();
 
             switch (id) {
                 case 1:
                     // default layer: circle on left / top
-//                    Camera2.Parameters parameters = camera.getParameters();
-//                    parameters.setPictureFormat(PixelFormat.JPEG);
-//                    parameters.setPreviewSize(width, height);
-//                    parameters.setPreviewFrameRate(5);
-//                    parameters.setPictureSize(width, height);
-//                    parameters.setJpegQuality(80);
+                    Camera.Parameters parameters = mCamera.getParameters();
+                    parameters.setPictureFormat(PixelFormat.JPEG);
+
+//                    if (getWindowManager().getDefaultDisplay().getOrientation() == 0)
+//                    {//坚
+                        Log.d("0", "setPreviewSize:"+height+"*"+width);
+                        parameters.setPreviewSize(height, width);
+                        mCamera.setDisplayOrientation(90);
+//                    }else {  //横
+//                        Log.d("1", "setPreviewSize:"+width+"*"+height);
+//                        parameters.setPreviewSize(width, height);
+//                        mCamera.setDisplayOrientation(0);
+//                    }
+//                    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                    parameters.setJpegQuality(90);
+                    mCamera.setParameters(parameters);
+                    mCamera.startPreview();
+
                     break;
                 case 2:
                     // media overlay layer: circle on right / bottom
@@ -543,16 +625,17 @@ public class MainActivity extends Activity {
                 default:
                     throw new RuntimeException("wha?");
             }
-        }
+        };
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
             // ignore
             Log.d(TAG, "Surface destroyed holder=" + holder);
 
-            if (camera != null) {
-                camera.release();
-                camera = null;
+            if (mCamera != null) {
+                mCamera.stopPreview();
+                mCamera.release();
+                mCamera = null;
             }
         }
 

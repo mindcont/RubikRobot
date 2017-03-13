@@ -38,7 +38,9 @@
 
         <activity
             android:name="com.dreamwalker.rubikrobot.MainActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+
+        </activity>
 
         <activity
             android:name="com.dreamwalker.rubikrobot.ui.WelcomeGuideActivity"
