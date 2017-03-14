@@ -61,7 +61,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 
-
 /**
  * This is the main Activity that displays the current chat session.
  */
@@ -135,7 +134,6 @@ public class MainActivity extends Activity {
                     readMessage = new String(readBuf, 0, msg.arg1);
                     Toast.makeText(MainActivity.this, "蓝牙接收到字符串" + readMessage, Toast.LENGTH_SHORT).show();
 
-
                     try{
                         mCamera.autoFocus(new Camera.AutoFocusCallback() {
                             @Override
@@ -143,8 +141,6 @@ public class MainActivity extends Activity {
                                 mCamera.takePicture(null, null, new MyPictureCallback());
                             }
                         });
-
-
 
                     }catch(Exception e){
                         e.printStackTrace();
@@ -533,7 +529,6 @@ public class MainActivity extends Activity {
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-
 
 //                saveToSDCard(data);
                 // Toast.makeText(getApplicationContext(), R.string.success,Toast.LENGTH_SHORT).show();
