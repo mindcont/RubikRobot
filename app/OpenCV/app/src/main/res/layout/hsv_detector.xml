@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/rgb_imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/welcomimg10" />
+
+        <ImageView
+            android:id="@+id/hsv_imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/welcomimg10" />
+    </LinearLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="1">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/minHue"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="minHue : 75" />
+
+            <SeekBar
+                android:id="@+id/minHueSeek"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:max="180"
+                android:progress="75" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/maxHue"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="maxHue : 100" />
+
+            <SeekBar
+                android:id="@+id/maxHueSeek"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:max="180"
+                android:progress="180" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/minSat"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="minSat : 60" />
+
+            <SeekBar
+                android:id="@+id/minSatSeek"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:max="255"
+                android:progress="60" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/maxSat"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="maxSat : 120" />
+
+            <SeekBar
+                android:id="@+id/maxSatSeek"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:max="255"
+                android:progress="255" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/minValue"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="minVal : 130" />
+
+            <SeekBar
+                android:id="@+id/minValueSeek"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:max="255"
+                android:progress="130" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/maxValue"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="maxVal : 40" />
+
+            <SeekBar
+                android:id="@+id/maxValueSeek"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:max="255"
+                android:progress="255" />
+
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/hsv_up_button"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="上一张" />
+
+        <Button
+            android:id="@+id/hsv_down_button"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="下一张" />
+
+        <Button
+            android:id="@+id/processButton"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="处理" />
+    </LinearLayout>
+
+</LinearLayout>
