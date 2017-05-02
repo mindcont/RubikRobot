@@ -24,8 +24,8 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.core.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ import static com.mindcont.rubikrobot.util.BitmapLoadUtil.decodeFixedSizeForFile
 
 public class ColorDetector extends Activity {
 
-    private static final String TAG = "New ColorDetector ";
+    private static final String TAG = "ColorDetector Activity";
 
     // 这里的路径适合 armpc 430 板卡的存储卡，不适合手机安卓，
 // 建议使用 Environment.getExternalStorageDirectory() 来获取外部存储卡根路径
@@ -52,7 +52,11 @@ public class ColorDetector extends Activity {
     private Button up_button, down_button, detector_button;
     private AutoCompleteTextView resultText;
     private Bitmap rawBitmap;
-    //    public ColorBlobDetector    mDetector;
+//    public ColorBlobDetector    mDetector;
+
+    // 确定裁剪的位置和裁剪的大小
+    private int cutRect[] = {520, 240, 400, 400};
+
     //    回调函数，用于初始化opencv库
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -76,17 +80,15 @@ public class ColorDetector extends Activity {
         }
     };
 
+
+    /**
+     * 显示上一张图片
+     */
     private Button.OnClickListener up_buttonListener = new
             Button.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
-
-                    //控制Image View显示上一张照片
-//                rawBitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/RubikRobot/" + String.valueOf((--filename > 0) ? filename : 0) + filetype);
-//                mImageView.setImageBitmap(rawBitmap);
-
-                    //将保存在本地的图片取出并缩小后显示在界面上
 
                     if (imgId > 0) {
                         imgId = imgId - 1;
@@ -95,64 +97,69 @@ public class ColorDetector extends Activity {
                         Toast.makeText(ColorDetector.this, "已经是第一张了", Toast.LENGTH_LONG).show();
                     }
 
-                    filePath = Environment.getExternalStorageDirectory() + "/RubikRobot/" + String.valueOf(imgId) + filetype;
+                    filePath = Environment.getExternalStorageDirectory() + "/RubikRobot/1/" + String.valueOf(imgId) + filetype;
                     rawBitmap = decodeFixedSizeForFile(filePath, 1);
 
                     // 确定裁剪的位置和裁剪的大小
                     rawBitmap = Bitmap.createBitmap(rawBitmap,
-                            250, 150,
-                            700, 700);
+                            cutRect[0], cutRect[1],
+                            cutRect[2], cutRect[3]);
 
+                    //控制Image View显示上一张照片
                     mImageView.setImageBitmap(rawBitmap);
                     //由于Bitmap内存占用较大，这里需要回收内存，否则会报out of memory异常
 //                    rawBitmap.recycle();
                 }
             };
+
+
+    /**
+     * 显示下一张图片
+     */
     private Button.OnClickListener down_buttonListener = new
             Button.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
 
-                    //控制Image View显示下一张照片
-//                rawBitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/RubikRobot/" + String.valueOf((++filename < 6) ? filename : 6) + filetype);
-//                mImageView.setImageBitmap(rawBitmap);
-
-                    if (imgId < 6) {
+                    if (imgId < 5) {
                         imgId = imgId + 1;
                     } else {
-                        imgId = 6;
+                        imgId = 5;
                         Toast.makeText(ColorDetector.this, "已经是最后一张了", Toast.LENGTH_LONG).show();
                     }
 
-                    filePath = Environment.getExternalStorageDirectory() + "/RubikRobot/" + String.valueOf(imgId) + filetype;
+                    filePath = Environment.getExternalStorageDirectory() + "/RubikRobot/1/" + String.valueOf(imgId) + filetype;
                     rawBitmap = decodeFixedSizeForFile(filePath, 1);
 
                     // 确定裁剪的位置和裁剪的大小
                     rawBitmap = Bitmap.createBitmap(rawBitmap,
-                            250, 150,
-                            700, 700);
+                            cutRect[0], cutRect[1],
+                            cutRect[2], cutRect[3]);
+
                     mImageView.setImageBitmap(rawBitmap);
+
                     //由于Bitmap内存占用较大，这里需要回收内存，否则会报out of memory异常
 //                    rawBitmap.recycle();
 
                 }
             };
+    /**
+     * 处理当前显示的图片
+     */
     private Button.OnClickListener detector_buttonListener = new Button.OnClickListener() {
 
         @Override
 
         public void onClick(View v) {
 
-            //识别当前显示的图片
-//          mImageView.setImageBitmap(detectEdges(rawBitmap));
-//            mImageView.setImageBitmap(detectEdges(rawBitmap));
-            //由于Bitmap内存占用较大，这里需要回收内存，否则会报out of memory异常
-//            rawBitmap.recycle();
+//        识别当前显示的图片
+//        直接检测角点，运算量太大，无反应
+//        mImageView.setImageBitmap(detectCorner(rawBitmap));
+            mImageView.setImageBitmap(detectEdges(rawBitmap));
 
-
-            //直接检测角点，运算量太大，无反应
-            mImageView.setImageBitmap(detectCorner(rawBitmap));
+//        由于Bitmap内存占用较大，这里需要回收内存，否则会报out of memory异常
+//        rawBitmap.recycle();
         }
     };
 
@@ -160,6 +167,7 @@ public class ColorDetector extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.color_detector);
+
 //        SurfaceView surfaceView = (SurfaceView) this
 //                .findViewById(R.id.surfaceView);
 
@@ -174,17 +182,16 @@ public class ColorDetector extends Activity {
          * 扫描顺序 上(白) 右（绿） 前（黄）下（橘红） 左（红） 后（蓝）
          */
 
-
 //        rawBitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/RubikRobot/" + String.valueOf(filename) + filetype);
-        filePath = Environment.getExternalStorageDirectory() + "/RubikRobot/" + String.valueOf(imgId) + filetype;
+        filePath = Environment.getExternalStorageDirectory() + "/RubikRobot/1/" + String.valueOf(imgId) + filetype;
         rawBitmap = decodeFixedSizeForFile(filePath, 1);
 
         // 确定裁剪的位置和裁剪的大小,这里讲对拍摄到的图片进行剪裁
         // 因为魔方在图像中的位置大体不变，可以通过预先剪裁的方式屏蔽干扰，
         // 不同分辨率的手机需要手动修改这个参数
         rawBitmap = Bitmap.createBitmap(rawBitmap,
-                250, 150,
-                700, 700);
+                cutRect[0], cutRect[1],
+                cutRect[2], cutRect[3]);
 
         mImageView.setImageBitmap(rawBitmap);
 
@@ -198,15 +205,22 @@ public class ColorDetector extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+
+//        需要c++混合编译才能取消opencv外部依赖库，下面的方法不行
 //        mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
     }
 
-
+    /**
+     * 检测魔方中心，并以此确定魔方9个小块的大致位置
+     *
+     * @param bitmap
+     * @return
+     */
     public Bitmap detectEdges(Bitmap bitmap) {
 
         Mat rgba = new Mat(); // 以mat 格式存储原图
-        Mat lines = new Mat();////存储检测出的直线坐标的矩阵，每个element有4个通道，第1、2个通道为直线的1个端点，第3、4个通道为直线的另1个端点
+        Mat lines = new Mat();////存储检测出的直线坐标的矩阵，每个element有4个通道，第1、2个通道为直线的起始端点，第3、4个通道为直线的终止端点
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
         String[] startPoint, endPoint;
@@ -215,7 +229,7 @@ public class ColorDetector extends Activity {
 
 
         //平滑图像
-        Imgproc.blur(rgba, rgba, new Size(3, 3));
+//        Imgproc.blur(rgba, rgba, new Size(3, 3));
 //        Imgproc.GaussianBlur(rgba, rgba, new Size(5, 5), 5);//高斯滤波
 
         //直接检测 角
@@ -245,10 +259,11 @@ public class ColorDetector extends Activity {
             System.out.println(Imgproc.contourArea(contours.get(i)));
             if (Imgproc.contourArea(contours.get(i)) > 100) {
                 Rect rect = Imgproc.boundingRect(contours.get(i));
-                System.out.println(rect.height);
-                if (rect.height > 100) {
+                double k = (rect.width+0.0)/rect.height;
+                System.out.println(k);
 
-                    //System.out.println(rect.x +","+rect.y+","+rect.height+","+rect.width);
+                if (rect.height > 100) {
+                    System.out.println(rect.x + "," + rect.y + "," + rect.height + "," + rect.width);
                     Core.rectangle(rgba, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
                 }
             }
@@ -261,11 +276,11 @@ public class ColorDetector extends Activity {
 //       Imgproc.morphologyEx(edges,opened,MORPH_OPEN,se);
 
         // 边缘检测算子 Canny
-//        Imgproc.Canny(edges, edges, 60, 200);
+        Imgproc.Canny(edges, edges, 60, 200);
 
         //直线检测 （灰度，返回结果，精度像素，精度弧度，阈值，最小连接点，碎线段连接的最大间隔值(gap)）
 //        Imgproc.HoughLinesP(edges, lines, 1, Math.PI / 180, 75, 90, 120);
-//        Imgproc.HoughLinesP(edges, lines, 1, Math.PI / 180, 60, 80, 100);
+        Imgproc.HoughLinesP(edges, lines, 1, Math.PI / 180, 60, 80, 100);
 
         //另一种 从HoughLinesP 返回lines Mat 从取直线起始点的 方法
 //        int[] a = new int[(int) lines.total() * lines.channels()]; //数组a存储检测出的直线端点坐标
@@ -275,35 +290,35 @@ public class ColorDetector extends Activity {
 //                    255, 255, 255), 50);
 //            }
 
-//        for (int i = 0; i < lines.cols(); i++) {
-//            double[] val = lines.get(0, i);
-//
-//            // 检测到的线 红
-////            Core.line(rgba, new Point(val[0], val[1]), new Point(val[2], val[3]), new Scalar(255, 0, 0), 20);
-//
-//            // 检测到的点 起点 绿 终点 蓝
-//            Core.circle(rgba, new Point(val[0], val[1]), 5, new Scalar(0, 255, 0), -1);
-//            Core.circle(rgba,new Point(val[2], val[3]),5, new Scalar(0, 0, 255), -1);
-//
-//
-//            Log.i(TAG, "点1: " + (int)val[0] +" "+ (int)val[1]);//startPoint
-//            Log.i(TAG, "点2: " + (int)val[2] +" "+ (int)val[3]);//endPoint
-//
-//            //将坐标x y 值 构造为字符串
-//            startPoint = (String.valueOf((int) val[0])+" " +String.valueOf((int) val[1])).split(" ");
-//            endPoint = (String.valueOf((int) val[2])+" " +String.valueOf((int) val[3])).split(" ");
-//
-//            // 添加到 ArrayList<String[]> 类型，传入k-means 算法
-//            // pointArray 和 startPoint 共享指针，追加元素会更改所有 坑！！！
-//            pointArray.add(startPoint);
-//            pointArray.add(endPoint);
-//        }
+        for (int i = 0; i < lines.cols(); i++) {
+            double[] val = lines.get(0, i);
+
+            // 检测到的线 红
+//            Core.line(rgba, new Point(val[0], val[1]), new Point(val[2], val[3]), new Scalar(255, 0, 0), 20);
+
+            // 检测到的点 起点 绿 终点 蓝
+            Core.circle(rgba, new Point(val[0], val[1]), 5, new Scalar(0, 255, 0), -1);
+            Core.circle(rgba,new Point(val[2], val[3]),5, new Scalar(0, 0, 255), -1);
+
+
+            Log.i(TAG, "点1: " + (int)val[0] +" "+ (int)val[1]);//startPoint
+            Log.i(TAG, "点2: " + (int)val[2] +" "+ (int)val[3]);//endPoint
+
+            //将坐标x y 值 构造为字符串
+            startPoint = (String.valueOf((int) val[0])+" " +String.valueOf((int) val[1])).split(" ");
+            endPoint = (String.valueOf((int) val[2])+" " +String.valueOf((int) val[3])).split(" ");
+
+            // 添加到 ArrayList<String[]> 类型，传入k-means 算法
+            // pointArray 和 startPoint 共享指针，追加元素会更改所有 坑！！！
+            pointArray.add(startPoint);
+            pointArray.add(endPoint);
+        }
 
         Toast.makeText(this, "加油，卡布达", Toast.LENGTH_LONG).show();
 
         // 经k-means 聚类后的中心点，作为魔方的中心位置,参数 2表示聚类 2 个中心
-//        centerPoint = mkmeans.getClusterPoint(pointArray, 1);
-//        Core.circle(rgba, new Point((int)centerPoint[0],(int)centerPoint[1]), 15, new Scalar(255, 255, 255), -1);
+        centerPoint = mkmeans.getClusterPoint(pointArray, 1);
+        Core.circle(rgba, new Point((int)centerPoint[0],(int)centerPoint[1]), 15, new Scalar(255, 255, 255), -1);
 //
 //        maxClusterDistancePoint = mkmeans.getMaxClusterDistance(centerPoint);
 //        Core.circle(rgba, new Point((int)maxClusterDistancePoint[0],(int)maxClusterDistancePoint[1]), 15, new Scalar(255, 255, 255), -1);

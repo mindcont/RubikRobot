@@ -21,21 +21,21 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
+import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.highgui.Highgui;
-import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.mindcont.rubikrobot.util.BitmapLoadUtil.decodeFixedSizeForFile;
+import static org.opencv.core.CvType.CV_8UC1;
 
 /**
  * @author mindcont
@@ -80,26 +80,12 @@ public class HsvRangeDetector extends Activity {
 
     private static final String TAG = "HsvRangeDetector ";
     private static String filetype = ".jpg";
+    Mat mRgba;
     // 声明控件
     private TextView minHue, maxHue, minSat, maxSat, minValue, maxValue;
     private SeekBar minHueSeek, maxHueSeek, minSatSeek, maxSatSeek, minValueSeek, maxValueSeek;
     private Button hsvUpButton, hsvDownButton, processButton;
     private int minHueValue, maxHueValue, minSatValue, maxSatValue, minValValue, maxValValue;
-    private ImageView rgb_imageView, hsv_imageView;
-    private Bitmap rawBitmap;
-    private int imgId = 0;
-    private String filePath;
-//    private int cutRect[] = {450, 200, 850, 850};
-    private  int cutRect[] = {60,420,500,500} ;
-
-    private int maxRows;
-    private int maxCols;
-    private int rowStart;
-    private int colStart;
-
-    private ArrayList<Rect> rectangles;
-    Mat mRgba ;
-
     SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -118,7 +104,9 @@ public class HsvRangeDetector extends Activity {
             minValue.setText("minVal : " + minValValue);
             maxValue.setText("maxVal : " + maxValValue);
 
-//            hsv_imageView.setImageBitmap(updateHSVFromCV());
+//            hsv_imageView.setImageBitmap(updateHSVFromCV(rawBitmap));
+            hsv_imageView.setImageBitmap(findRectangle(rawBitmap));
+
         }
 
         @Override
@@ -131,6 +119,20 @@ public class HsvRangeDetector extends Activity {
 
         }
     };
+    private ImageView rgb_imageView, hsv_imageView;
+    private Bitmap rawBitmap;
+    private int imgId = 0;
+    private String filePath;
+    // 确定裁剪的位置和裁剪的大小
+//    private int cutRect[] = {450, 200, 850, 850};
+//    private  int cutRect[] = {60,420,500,500} ;
+    private int cutRect[] = {420, 140, 500, 500};
+
+    private int maxRows;
+    private int maxCols;
+    private int rowStart;
+    private int colStart;
+    private ArrayList<Rect> rectangles;
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -167,10 +169,6 @@ public class HsvRangeDetector extends Activity {
             filePath = Environment.getExternalStorageDirectory() + "/RubikRobot/1/" + String.valueOf(imgId) + filetype;
             rawBitmap = decodeFixedSizeForFile(filePath, 1);
 
-            // 确定裁剪的位置和裁剪的大小
-//            rawBitmap = Bitmap.createBitmap(rawBitmap,
-//                    250, 150,
-//                    700, 700);
 
             rawBitmap = Bitmap.createBitmap(rawBitmap,
                     cutRect[0], cutRect[1],
@@ -194,10 +192,6 @@ public class HsvRangeDetector extends Activity {
             filePath = Environment.getExternalStorageDirectory() + "/RubikRobot/1/" + String.valueOf(imgId) + filetype;
             rawBitmap = decodeFixedSizeForFile(filePath, 1);
 
-            // 确定裁剪的位置和裁剪的大小
-//            rawBitmap = Bitmap.createBitmap(rawBitmap,
-//                    250, 150,
-//                    700, 700);
             rawBitmap = Bitmap.createBitmap(rawBitmap,
                     cutRect[0], cutRect[1],
                     cutRect[2], cutRect[3]);
@@ -211,10 +205,13 @@ public class HsvRangeDetector extends Activity {
         public void onClick(View view) {
             Toast.makeText(HsvRangeDetector.this, "处理中", Toast.LENGTH_LONG).show();
 //            hsv_imageView.setImageBitmap(updateHSV(rawBitmap));
-//            hsv_imageView.setImageBitmap(updateHSVFromCV());
+//            hsv_imageView.setImageBitmap(updateHSVFromCV(rawBitmap));
 
-            filePath = Environment.getExternalStorageDirectory() + "/RubikRobot/1/" + String.valueOf(imgId) + filetype;
-            hsv_imageView.setImageBitmap(getColor(filePath));
+            hsv_imageView.setImageBitmap(findRectangle(rawBitmap));
+//            hsv_imageView.setImageBitmap(getFaceColor(rawBitmap));
+//            画框
+//            filePath = Environment.getExternalStorageDirectory() + "/RubikRobot/1/" + String.valueOf(imgId) + filetype;
+//            hsv_imageView.setImageBitmap(getColor(filePath));
         }
     };
 
@@ -265,9 +262,6 @@ public class HsvRangeDetector extends Activity {
         // 确定裁剪的位置和裁剪的大小,这里讲对拍摄到的图片进行剪裁
         // 因为魔方在图像中的位置大体不变，可以通过预先剪裁的方式屏蔽干扰，
         // 不同分辨率的手机需要手动修改这个参数
-//        rawBitmap = Bitmap.createBitmap(rawBitmap,
-//                250, 150,
-//                700, 700);
         rawBitmap = Bitmap.createBitmap(rawBitmap,
                 cutRect[0], cutRect[1],
                 cutRect[2], cutRect[3]);
@@ -344,133 +338,40 @@ public class HsvRangeDetector extends Activity {
 
     ;
 
-    private Bitmap updateHSVFromCV() {
+    /**
+     * 本函数通过滑块找魔方颜色阈值，为下一步识别做准备
+     * @param src
+     * @return
+     */
+    private Bitmap updateHSVFromCV(Bitmap src) {
 
         Mat mRgbMat = new Mat();
         Mat mHsvMat = new Mat();
         Mat dst = new Mat();
-        Mat intermediate = new Mat();
-        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        filePath = Environment.getExternalStorageDirectory() + "/RubikRobot/1/" + String.valueOf(imgId) + filetype;
-        rawBitmap = decodeFixedSizeForFile(filePath, 1);
 
-        // 确定裁剪的位置和裁剪的大小
-        rawBitmap = Bitmap.createBitmap(rawBitmap,
-                cutRect[0], cutRect[1],
-                cutRect[2], cutRect[3]);
+        Utils.bitmapToMat(src, mRgbMat);
 
-        Utils.bitmapToMat(rawBitmap, mRgbMat);
-
-//        Imgproc.blur(mRgbMat, mRgbMat, new Size(11, 11));
-
-        // 转换色彩空间 hsv
-//        Imgproc.cvtColor(mRgbMat, mHsvMat, Imgproc.COLOR_RGB2HSV, 1);
-
-
-
-
-//
-//        Imgproc.findContours(intermediate, contours, new Mat(), 0, 2);
-//
-//        int largestContour = -1;
-//        double area = 0;
-//        for (int i = 0; i < contours.size(); i++) {
-//            double cArea = Imgproc.contourArea(contours.get(i));
-//            if (cArea > area) {
-//                area = cArea;
-//                largestContour = i;
-//            }
-//        }
-//
-//        Rect r = null;
-//        if (largestContour > -1)
-//            r = Imgproc.boundingRect(contours.get(largestContour));
-//
-//        if (r != null) {
-//            Core.rectangle(intermediate, r.tl(), r.br(), new Scalar(255, 255,
-//                    255), 5);
-//
-////            if ((r.y + r.height/2) < this.getHeight() / 2) {
-////                // Move right
-//////                mHandler.obtainMessage(MainActivity.ACTION_RIGHT).sendToTarget();
-////            } else {
-////                // Move left
-//////                mHandler.obtainMessage(MainActivity.ACTION_LEFT).sendToTarget();
-////            }
-//        }else{
-//            // Stop
-////            mHandler.obtainMessage(MainActivity.ACTION_STOP).sendToTarget();
-//        }
+        //平滑图像
+        Imgproc.GaussianBlur(mRgbMat, mRgbMat, new Size(5, 5), 5);//高斯滤波
 
         //图像预处理
-        minHueValue = minHueSeek.getProgress();
-        maxHueValue = maxHueSeek.getProgress();
-        minSatValue = minSatSeek.getProgress();
-        maxSatValue = maxSatSeek.getProgress();
-        minValValue = minValueSeek.getProgress();
-        maxValValue = maxValueSeek.getProgress();
+        minHueValue = minHueSeek.getProgress();minHue.setText("minHue : " + minHueValue);
+        maxHueValue = maxHueSeek.getProgress();maxHue.setText("maxHue : " + maxHueValue);
+        minSatValue = minSatSeek.getProgress();minSat.setText("minSat : " + minSatValue);
+        maxSatValue = maxSatSeek.getProgress();maxSat.setText("maxSat : " + maxSatValue);
+        minValValue = minValueSeek.getProgress();minValue.setText("minVal : " + minValValue);
+        maxValValue = maxValueSeek.getProgress();maxValue.setText("maxVal : " + maxValValue);
 
-        minHue.setText("minHue : " + minHueValue);
-        maxHue.setText("maxHue : " + maxHueValue);
-        minSat.setText("minSat : " + minSatValue);
-        maxSat.setText("maxSat : " + maxSatValue);
-        minValue.setText("minVal : " + minValValue);
-        maxValue.setText("maxVal : " + maxValValue);
-
-
+        // 转换色彩空间 hsv
         Imgproc.cvtColor(mRgbMat, mHsvMat, Imgproc.COLOR_RGB2HSV);
 
+        // 按滑块调节阈值过滤
         Core.inRange(mHsvMat, new Scalar(minHueValue, minSatValue, minValValue), new Scalar(maxHueValue, maxSatValue, maxValValue),
-                intermediate);
+                mHsvMat);
 
-        //腐蚀
-        Mat erode = Imgproc.getStructuringElement(Imgproc.MORPH_ERODE, new Size(9, 9));
-        Imgproc.erode(intermediate, dst, erode);
-        //膨胀
-        Mat dilate = Imgproc.getStructuringElement(Imgproc.MORPH_DILATE, new Size(9, 9));
-        Imgproc.dilate(dst, intermediate, dilate);
-
-
-
-
-
-
-
-//        Mat edges = new Mat(mRgbMat.size(), CvType.CV_8UC1);
-//        Imgproc.cvtColor(mRgbMat, edges, Imgproc.COLOR_RGB2GRAY);
-
-//        Imgproc.Canny(mRgbMat, mRgbMat, 0, 146);
-
-//        Scalar lowerThreshold = new Scalar(minHueValue, minSatValue, minValValue); //  – lower hsv values
-//        Scalar upperThreshold = new Scalar(maxHueValue, maxSatValue, maxValValue); //  – higher hsv values
-//        Core.inRange(mHsvMat, lowerThreshold, upperThreshold, mHsvMat);
-
-//
-////        膨胀
-////        Imgproc.dilate(mHsvMat, mHsvMat, new Mat());
-//
-        Imgproc.findContours(intermediate, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
-//
-        for (int i = 0; i < contours.size(); i++) {
-//            System.out.println(Imgproc.contourArea(contours.get(i)));
-
-            if (Imgproc.contourArea(contours.get(i)) > 100) {
-                Rect rect = Imgproc.boundingRect(contours.get(i));
-//                System.out.println(rect.height);
-                if (rect.height > 100) {
-
-                    //System.out.println(rect.x +","+rect.y+","+rect.height+","+rect.width);
-                    Core.rectangle(mRgbMat, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
-                    Core.circle(mRgbMat, new Point(rect.x + rect.width / 2, rect.y + rect.height / 2), 15, new Scalar(0, 255, 0), -1);
-
-                    System.out.println("x :" + (int) (rect.x + rect.width / 2) + " y :" + (int) (rect.y + rect.height / 2));
-
-                }
-            }
-        }
-
+        // 返回过滤结果
         Bitmap resultBitmap = Bitmap.createBitmap(mRgbMat.cols(), mRgbMat.rows(), Bitmap.Config.RGB_565);
-        Utils.matToBitmap(mRgbMat, resultBitmap);
+        Utils.matToBitmap(mHsvMat, resultBitmap);
 
         mRgbMat.release();
         mHsvMat.release();
@@ -478,30 +379,91 @@ public class HsvRangeDetector extends Activity {
         return resultBitmap;
     }
 
+    private Bitmap findRectangle (Bitmap src){
+
+        Mat rgba = new Mat();
+        Mat gray = new Mat();
+        Mat blur = new Mat();
+        Mat canny = new Mat();
+        Mat dilated = new Mat();
+
+
+        Utils.bitmapToMat(src, rgba);
+
+
+        Imgproc.cvtColor(rgba, gray, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.GaussianBlur(gray, blur, new Size(3, 3), 0);//高斯滤波
+
+        //测试canny算子 阈值
+//        minHueValue = minHueSeek.getProgress();minHue.setText("minHue : " + minHueValue);
+//        maxHueValue = maxHueSeek.getProgress();maxHue.setText("maxHue : " + maxHueValue);
+//        Imgproc.Canny(blur, canny, minSatValue, maxSatValue);
+
+        Imgproc.Canny(blur, canny, 0, 70);
+
+        Imgproc.dilate(canny, dilated, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5,5)));
+
+        //         find contours
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+
+//        (contours, hierarchy) = cv2.findContours(dilated.copy(),
+//                cv2.RETR_TREE,
+//                cv2.CHAIN_APPROX_SIMPLE)
+
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(dilated, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        Log.e(TAG, "contours.size   " +Integer.toString(contours.size()));
+
+        for( int i = 0; i < contours.size(); i++ )
+        {
+            Rect brect = Imgproc.boundingRect(contours.get(i));
+            double k = (brect.width+0.0)/brect.height;
+
+            if(brect.area() > 50000  && k > 0.8 && k < 1.2)
+            {
+                System.out.println(brect.area());
+                RotatedRect rect = Imgproc.minAreaRect(new MatOfPoint2f(contours.get(i).toArray()));
+
+                Core.circle(rgba, rect.center, 25, new Scalar(255, 255, 255), -1);
+
+                Rect brect2 = rect.boundingRect();
+                Log.e(TAG, "brect2   " +Integer.toString(brect2.x));
+                Core.line(rgba,new Point(brect2.x, brect2.y), new Point(brect2.x + brect2.width, brect2.y + brect2.height), new Scalar(
+                    0, 255, 0), 15);
+                Core.rectangle(rgba, new Point(brect2.x, brect2.y), new Point(brect2.x + brect2.width, brect2.y + brect2.height), new Scalar(0, 255, 0));
+            }
+        }
+
+        Bitmap resultBitmap = Bitmap.createBitmap(rgba.cols(), rgba.rows(), Bitmap.Config.RGB_565);
+        Utils.matToBitmap(rgba, resultBitmap);
+
+        return  resultBitmap;
+
+    }
     /**
      * 识别魔方单个面，返回特定顺序的颜色字符串，形如 "URRRUBULF"
      * 扫描顺序 上(白U) 右（绿R） 前（黄F）下（橘红D） 左（L红） 后（蓝B）
      *
      * @return
      */
-    private Bitmap getFaceColor(String imgPath) {
-
+//    private Bitmap getFaceColor(String imgPath) {
+    private Bitmap getFaceColor(Bitmap src) {
         //特定的颜色空间，
         int hsvColor[][] = {
-//                {0,46,0,114,189,255}, //白，未验证
-//                {20,180,0,31,187,253}, //
-                {34, 79, 44, 255, 86, 255}, //绿
-                {19, 35, 84, 255, 161, 255}, //黄
-                {3, 15, 172, 255, 154, 255}, //橘
-                {0, 2, 107, 255, 40, 255}, //红
-                {100, 122, 43, 255, 0, 255}, //蓝
+                {0,180,0,35,221,255}, //白
+                {63, 95, 66, 255, 162, 255}, //绿
+                {23, 61, 66, 255, 162, 255}, //黄
+                {0, 15, 125, 255, 201, 255}, //橘
+                {0, 3, 163, 255, 144, 255}, //红
+                {100, 157, 27, 255, 113, 255}, //蓝
         };
 
         int[][] centerPointArray = new int[9][3];
 
         //颜色表
         ArrayList<String> list = new ArrayList<String>() {{
-//            add("白");
+            add("白");
             add("绿");
             add("黄");
             add("橘");
@@ -519,22 +481,18 @@ public class HsvRangeDetector extends Activity {
         String cubeFaceDefinition = "";
 
         //从文件路径中加载图片并下采样
-        rawBitmap = decodeFixedSizeForFile(imgPath, 2);
+//        rawBitmap = decodeFixedSizeForFile(imgPath, 2);
 
         // 确定裁剪的位置和裁剪的大小
 //        rawBitmap = Bitmap.createBitmap(rawBitmap,
-//                250, 150,
-//                700, 700);
-        rawBitmap = Bitmap.createBitmap(rawBitmap,
-                cutRect[0], cutRect[1],
-                cutRect[2], cutRect[3]);
+//                cutRect[0], cutRect[1],
+//                cutRect[2], cutRect[3]);
         Utils.bitmapToMat(rawBitmap, mRgbMat);
 
+        //平滑图像
+        Imgproc.GaussianBlur(mRgbMat, mRgbMat, new Size(5, 5), 5);//高斯滤波
         // 转换色彩空间 hsv
 //        Imgproc.cvtColor(mRgbMat, mHsvMat, Imgproc.COLOR_RGB2HSV, 1);
-
-        //原始图像
-
 
         //依次检测
         // 上(白U) 右（绿R） 前（黄F）下（橘红D） 左（L红） 后（蓝B）
@@ -564,7 +522,6 @@ public class HsvRangeDetector extends Activity {
 
             int colorCount = 0;
 
-
             for (int j = 0; j < contours.size(); j++) {
 //                System.out.println(Imgproc.contourArea(contours.get(j)));
 
@@ -572,7 +529,7 @@ public class HsvRangeDetector extends Activity {
                     Rect rect = Imgproc.boundingRect(contours.get(j));
 //                    System.out.println(rect.height);
 
-                    if (rect.height > 100) {
+                    if (rect.height > 90) {
 
                         //每种颜色的中心点坐标，不止一个
 //                        System.out.println(rect.x +","+rect.y+","+rect.height+","+rect.width);
@@ -609,10 +566,12 @@ public class HsvRangeDetector extends Activity {
 
         return resultBitmap;
 //        return  cubeFaceDefinition;
-    };
+    }
+
+    ;
 
 
-    private Bitmap getColor(String imgPath){
+    private Bitmap getColor(String imgPath) {
 
         mRgba = new Mat();
         rawBitmap = decodeFixedSizeForFile(imgPath, 1);
@@ -628,13 +587,14 @@ public class HsvRangeDetector extends Activity {
 
         maxRows = rectangles.get(0).height - 1;
         maxCols = rectangles.get(0).width - 1;
-        rowStart = (int) Math.ceil(maxRows/3.0);
-        colStart = (int) Math.ceil(maxCols/3.0);
 
-        for (int i = 0; i<rectangles.size();i++){
+        rowStart = (int) Math.ceil(maxRows / 3.0);
+        colStart = (int) Math.ceil(maxCols / 3.0);
+
+        for (int i = 0; i < rectangles.size(); i++) {
 
 //            System.out.println(rectangles.get(i).x+" "+rectangles.get(i).y);
-            Core.rectangle(mRgba, new Point(rectangles.get(i).x, rectangles.get(i).y), new Point(rectangles.get(i).x + rectangles.get(i).width, rectangles.get(i).y + rectangles.get(i).height), new Scalar(255, 255, 255),5);
+            Core.rectangle(mRgba, new Point(rectangles.get(i).x, rectangles.get(i).y), new Point(rectangles.get(i).x + rectangles.get(i).width, rectangles.get(i).y + rectangles.get(i).height), new Scalar(255, 255, 255), 5);
 //            Core.putText(mRgba, new String().valueOf(i), new Point(rectangles.get(i).x+rectangles.get(i).width/2, rectangles.get(i).y+rectangles.get(i).height/2), Core.FONT_HERSHEY_SIMPLEX, 1, new Scalar(0, 0, 255), 5);
             dectectColor(mRgba.submat(rectangles.get(i)));
         }
@@ -643,72 +603,33 @@ public class HsvRangeDetector extends Activity {
         Bitmap resultBitmap = Bitmap.createBitmap(mRgba.cols(), mRgba.rows(), Bitmap.Config.RGB_565);
         Utils.matToBitmap(mRgba, resultBitmap);
         return resultBitmap;
-    };
+    }
+
+    ;
 
     private void dectectColor(Mat src) {
 
         Imgproc.cvtColor(src, src, Imgproc.COLOR_RGBA2BGR);
         Imgproc.cvtColor(src, src, Imgproc.COLOR_BGR2HSV);
 
-        // We read hue and luminance values from 5 points, which are arranged like the "5" dots on a dice
-        // and calculate the mean over a period of $detectingColorRounds frames
-        double hue = src.get(maxRows/2, maxCols/2)[0];
-        double lum = src.get(maxRows/2, maxCols/2)[1];
-        for (int row=rowStart; row <=maxRows; row = row + rowStart) {
-            for (int col=colStart; col <= maxCols; col = col + colStart) {
+
+        double hue = src.get(maxRows / 2, maxCols / 2)[0];
+        double lum = src.get(maxRows / 2, maxCols / 2)[1];
+        for (int row = rowStart; row <= maxRows; row = row + rowStart) {
+            for (int col = colStart; col <= maxCols; col = col + colStart) {
                 hue += src.get(row, col)[0];
                 lum += src.get(row, col)[1];
-                Core.circle(mRgba,new Point(row,col),10,new Scalar(255,0,0));
-                System.out.println("row： "+ row + "col " + col);
+                Core.circle(mRgba, new Point(row, col), 10, new Scalar(255, 0, 0));
+//                System.out.println("row： "+ row + "col " + col);
             }
         }
         hue /= 5;
         lum /= 5;
 
-        System.out.println("hue： "+ hue + "lum " + lum);
+        System.out.println("hue： " + hue + "lum " + lum);
 
-//        if (hue < 14 && hue > 6) {
-//
-//            System.out.println("颜色： "+ "黄");
-//
-//        } else if (hue < 130 && hue > 100 && lum < 130) {
-//
-//            System.out.println("颜色： "+ "蓝");
-//
-//        } else if (hue <= 6 || hue > 170) {
-//
-//            System.out.println("颜色： "+ "橘");
-//        } else if (hue < 75 && hue > 42) {
-//
-//            System.out.println("颜色： "+ "绿");
-//
-//        } else if (hue < 30 && hue > 15) {
-//
-//            System.out.println("颜色： "+ "红");
-//
-//        } else if (lum > 100) {
-//
-//            System.out.println("颜色： "+ "白");
-//        }
+    }
 
-        if (hue > 0 && hue < 20) {
-            System.out.println("颜色： "+ "红");
-        }  else if (hue >25 && hue<35) {
-            System.out.println("颜色： "+ "橘");
-        }
-        else if (hue > 40 && hue <60 ) {
-            System.out.println("颜色： "+ "黄");
-        }
-        else if (hue > 70 && hue < 150) {
-            System.out.println("颜色： "+ "绿");
-        }
-        else if (hue >100  && hue < 122) {
-            System.out.println("颜色： "+ "蓝");
-        }
-        else {
-            System.out.println("颜色： "+ "白");
-        }
-
-    };
+    ;
 }
 
