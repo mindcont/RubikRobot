@@ -36,6 +36,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.Size;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,7 +60,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.util.List;
 
 
 /**
@@ -239,6 +240,8 @@ public class MainActivity extends Activity {
 
         int screenWidth = wm.getDefaultDisplay().getWidth();
         int screenHeight = wm.getDefaultDisplay().getHeight();
+
+        Log.d(TAG, "screenWidth :" + screenWidth + " screenHeight:" + screenHeight);
 
         //计算预览界面和硬件平台的标定位置中心，这里屏幕中心
          locate_x = screenWidth/2;
@@ -602,9 +605,22 @@ public class MainActivity extends Activity {
                     Camera.Parameters parameters = mCamera.getParameters();
                     parameters.setPictureFormat(PixelFormat.JPEG);
 
+                    /*获取摄像头支持的PreviewSize列表*/
+                    List<Camera.Size> supportedpreviewSizes = parameters.getSupportedPreviewSizes();
+                    for (int i = 0; i < supportedpreviewSizes.size(); i++) {
+                        Log.e("预览尺寸", " Supported Size. Width: " + supportedpreviewSizes.get(i).width + " height : " + supportedpreviewSizes.get(i).height);
+                    }
+
+                    /*获取摄像头支持的照片大小*/
+                    List<Camera.Size> supportedPictureSizes = parameters.getSupportedPictureSizes();
+                    for (int i = 0; i < supportedPictureSizes.size(); i++) {
+
+                        Log.e("照片尺寸", " Supported Size. Width: " + supportedPictureSizes.get(i).width + " height : " + supportedPictureSizes.get(i).height);
+                    }
+
 //                    if (getWindowManager().getDefaultDisplay().getOrientation() == 0)
 //                    {//坚
-                        Log.d("0", "setPreviewSize:"+height+"*"+width);
+                        Log.e("0", "setPreviewSize:"+height+"*"+width);
                         parameters.setPreviewSize(height, width);
                         mCamera.setDisplayOrientation(90);
 //                    }else {  //横

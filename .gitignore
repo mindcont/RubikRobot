@@ -31,3 +31,6 @@ app/RubikRobot/.idea/
 
 # Android Studio captures folder
 app/RubikRobot/captures/
+app/OpenCV/app/
+
+app/OpenCV/build/
