@@ -14,8 +14,7 @@ picture | 图片 |
 reference | Two-Phase-Algorithm 魔方解算算法|
 
 ### 项目流程
-硬件(Armpc c30板卡)--》适配安卓4.2系统--》运行APP (主要实现色块的识别,解魔方算法)
-并利用蓝牙向stm32系列单片机开发板通信--》驱动舵机--》旋转魔方--》复原完成
+手机（android 4.4 及以上）运行APP (主要实现色块的识别,解魔方算法) --》蓝牙向stm32系列单片机开发板通信--》驱动舵机--》旋转魔方--》复原完成
 
 ### 视频
 [解魔方机器人](http://player.youku.com/embed/XMTQ5MTU5NzM4OA==)
