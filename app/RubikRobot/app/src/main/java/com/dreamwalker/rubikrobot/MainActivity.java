@@ -188,6 +188,11 @@ public class MainActivity extends Activity {
                 }
             };
 
+    /**
+     * 获得相机旋转角
+     * @param activity
+     * @return
+     */
     public static int getPreviewDegree(Activity activity) {
 
         int rotation = activity.getWindowManager().getDefaultDisplay()
@@ -348,7 +353,7 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Sends a message.
+     * 发送信息.
      *
      * @param message A string of text to send.
      */
@@ -537,7 +542,6 @@ public class MainActivity extends Activity {
                     e.printStackTrace();
                 }
 
-
 //                saveToSDCard(data);
                 // Toast.makeText(getApplicationContext(), R.string.success,Toast.LENGTH_SHORT).show();
 
@@ -619,11 +623,11 @@ public class MainActivity extends Activity {
                     }
 
 //                    if (getWindowManager().getDefaultDisplay().getOrientation() == 0)
-//                    {//坚
+//                    {//竖屏
                         Log.e("0", "setPreviewSize:"+height+"*"+width);
                         parameters.setPreviewSize(height, width);
                         mCamera.setDisplayOrientation(90);
-//                    }else {  //横
+//                    }else {  //横屏
 //                        Log.d("1", "setPreviewSize:"+width+"*"+height);
 //                        parameters.setPreviewSize(width, height);
 //                        mCamera.setDisplayOrientation(0);
